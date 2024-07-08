@@ -15,7 +15,20 @@ type DockerPlugin struct {
 }
 
 func NewDockerPlugin(option interface{}) (jmfzf.Plugin, error) {
-	cli, err := client.NewClient("npipe:////./pipe/docker_engine", "1.43", nil, nil)
+	var opt jmfzf.DockerConfig
+	if option != nil {
+		err := jmfzf.MapToStruct(option, &opt)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	dockerVersion := opt.Version
+	if dockerVersion == "" {
+		dockerVersion = "1.43"
+	}
+
+	cli, err := client.NewClient(opt.Host, opt.Version, nil, nil)
 	if err != nil {
 		return nil, err
 	}

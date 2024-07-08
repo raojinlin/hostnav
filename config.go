@@ -31,7 +31,8 @@ type JumpServerCofnig struct {
 type SshConfig []string
 
 type DockerConfig struct {
-	Host string `json:"host" yaml:"host"`
+	Host    string `json:"host" yaml:"host"`
+	Version string `json:"version" yaml:"version"`
 }
 
 type KubernetesConfig struct {

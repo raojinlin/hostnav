@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 
 	fzf "github.com/junegunn/fzf/src"
@@ -37,8 +38,10 @@ func main() {
 		defer close(outputChan)
 		output := <-outputChan
 		host := indexedHosts[output]
-		fmt.Println("host", host)
-		fmt.Println(host.Connect())
+		err := host.Connect()
+		if err != nil {
+			slog.Error("Error connecting to host", "error", err)
+		}
 		done <- struct{}{}
 	}()
 
@@ -69,6 +72,4 @@ func main() {
 
 	// 等待输出协程完成
 	<-done
-
-	fmt.Println("Main program done")
 }
