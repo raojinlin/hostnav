@@ -10,8 +10,13 @@ import (
 )
 
 func main() {
+	cfg, err := jmfzf.NewConfig("./config.yaml")
+	if err != nil {
+		panic(err)
+	}
+
 	inputChan := make(chan string)
-	pluginManager := manager.New([]string{"ec2", "cvm", "jumpserver"})
+	pluginManager := manager.New([]string{"cvm", "bce", "jumpserver"}, cfg)
 
 	hosts, _ := pluginManager.List(nil)
 	go func() {

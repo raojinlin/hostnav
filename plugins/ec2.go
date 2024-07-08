@@ -1,15 +1,11 @@
 package plugins
 
-import "github.com/raojinlin/jmfzf"
-
-type Ec2PluginOptions struct {
-	AccessKey       string `json:"access_key" yaml:"access_key"`
-	AccessKeySecret string `json:"access_key_secret" yaml:"access_key_secret"`
-	Zone            string `json:"zone" yaml:"zone"`
-}
+import (
+	"github.com/raojinlin/jmfzf"
+)
 
 type Ec2Plugin struct {
-	options *Ec2PluginOptions
+	options *jmfzf.CloudProviderConfig
 }
 
 func (e *Ec2Plugin) List(option *jmfzf.ListOptions) ([]jmfzf.Host, error) {
@@ -40,9 +36,12 @@ func (e *Ec2Plugin) Name() string {
 }
 
 func NewEc2Plugin(options interface{}) (jmfzf.Plugin, error) {
-	var opt *Ec2PluginOptions
+	var opt jmfzf.CloudProviderConfig
 	if options != nil {
-		opt = options.(*Ec2PluginOptions)
+		err := jmfzf.MapToStruct(options, &opt)
+		if err != nil {
+			return nil, err
+		}
 	}
-	return &Ec2Plugin{options: opt}, nil
+	return &Ec2Plugin{options: &opt}, nil
 }
