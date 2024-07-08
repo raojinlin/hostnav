@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/raojinlin/jmfzf"
+	"github.com/raojinlin/jmfzf/pkg/terminal"
 	"gopkg.in/twindagger/httpsig.v1"
 )
 
@@ -117,17 +118,22 @@ func (plugin *JumpServerPlugin) getUserPermsAssets() ([]Asset, error) {
 	return assets, nil
 }
 
-func (plugin *JumpServerPlugin) List(options *jmfzf.ListOptions) ([]jmfzf.Host, error) {
+func (plugin *JumpServerPlugin) List(options *jmfzf.ListOptions) ([]terminal.Host, error) {
 	assets, err := plugin.getUserPermsAssets()
 	if err != nil {
 		return nil, err
 	}
 
-	var hosts []jmfzf.Host
+	var hosts []terminal.Host
 	for _, asset := range assets {
-		hosts = append(hosts, jmfzf.Host{
-			PublicIP: asset.Meta.Data.IP,
-			Name:     plugin.Name() + ": " + asset.Name,
+		hosts = append(hosts, terminal.Host{
+			Type: terminal.TerminalTypeHost,
+			SSHInfo: terminal.SSHInfo{
+				PublicIP: asset.Meta.Data.IP,
+				Name:     plugin.Name() + ": " + asset.Name,
+				Port:     22,
+				User:     "root",
+			},
 		})
 	}
 

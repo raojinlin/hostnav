@@ -7,6 +7,7 @@ import (
 	fzf "github.com/junegunn/fzf/src"
 	"github.com/raojinlin/jmfzf"
 	"github.com/raojinlin/jmfzf/pkg/manager"
+	"github.com/raojinlin/jmfzf/pkg/terminal"
 )
 
 func main() {
@@ -16,12 +17,14 @@ func main() {
 	}
 
 	inputChan := make(chan string)
-	pluginManager := manager.New([]string{"bce", "cvm"}, cfg)
+	hostManager := manager.New([]string{"docker", "bce", "cvm", "jumpserver"}, cfg)
 
-	hosts, _ := pluginManager.List(nil)
+	hosts, _ := hostManager.List(nil)
+	indexedHosts := make(map[string]terminal.Host)
 	go func() {
 		for _, host := range hosts {
-			name := host.Name + " " + host.PublicIP
+			name := host.String()
+			indexedHosts[name] = host
 			inputChan <- name
 		}
 		close(inputChan)
@@ -33,10 +36,9 @@ func main() {
 	go func() {
 		defer close(outputChan)
 		output := <-outputChan
-		fmt.Println("got output: ", output)
-		fmt.Println("ddd")
-		tmux := &jmfzf.Tmux{}
-		tmux.SplitWindow("docker exec -it hanxiucao_mysql /bin/bash")
+		host := indexedHosts[output]
+		fmt.Println("host", host)
+		fmt.Println(host.Connect())
 		done <- struct{}{}
 	}()
 

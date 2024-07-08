@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/raojinlin/jmfzf"
+	"github.com/raojinlin/jmfzf/pkg/terminal"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 	cvm "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cvm/v20170312"
@@ -65,7 +66,7 @@ func (p *CVMPlugin) listInstances(client *cvm.Client) ([]*cvm.Instance, error) {
 	return instances, nil
 }
 
-func (p *CVMPlugin) List(options *jmfzf.ListOptions) ([]jmfzf.Host, error) {
+func (p *CVMPlugin) List(options *jmfzf.ListOptions) ([]terminal.Host, error) {
 	// Implement the logic to list CVM instances
 	// Return a slice of Host structs
 	var instances []*cvm.Instance
@@ -79,14 +80,17 @@ func (p *CVMPlugin) List(options *jmfzf.ListOptions) ([]jmfzf.Host, error) {
 		instances = append(instances, result...)
 	}
 
-	var result []jmfzf.Host
+	var result []terminal.Host
 	for _, instance := range instances {
-		result = append(result, jmfzf.Host{
-			Name:     fmt.Sprintf("%s(%s): %s", p.Name(), *instance.Placement.Zone, *instance.InstanceName),
-			PublicIP: *instance.PublicIpAddresses[0],
-			Port:     22,
-			User:     "root",
-			LocalIP:  *instance.PrivateIpAddresses[0],
+		result = append(result, terminal.Host{
+			Type: terminal.TerminalTypeHost,
+			SSHInfo: terminal.SSHInfo{
+				Name:     fmt.Sprintf("%s(%s): %s", p.Name(), *instance.Placement.Zone, *instance.InstanceName),
+				PublicIP: *instance.PublicIpAddresses[0],
+				Port:     22,
+				User:     "root",
+				LocalIP:  *instance.PrivateIpAddresses[0],
+			},
 		})
 	}
 

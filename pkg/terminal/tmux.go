@@ -1,4 +1,4 @@
-package jmfzf
+package terminal
 
 import (
 	"fmt"

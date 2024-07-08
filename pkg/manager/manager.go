@@ -5,6 +5,7 @@ import (
 	"log/slog"
 
 	"github.com/raojinlin/jmfzf"
+	"github.com/raojinlin/jmfzf/pkg/terminal"
 	"github.com/raojinlin/jmfzf/plugins"
 )
 
@@ -13,6 +14,7 @@ var pluginConstructor = map[string]func(option interface{}) (jmfzf.Plugin, error
 	"cvm":        plugins.NewCVMPlugin,
 	"jumpserver": plugins.NewJumpServerPlugin,
 	"bce":        plugins.NewBcePlugin,
+	"docker":     plugins.NewDockerPlugin,
 }
 
 type Manager struct {
@@ -38,8 +40,8 @@ func New(pluginNames []string, config *jmfzf.Config) *Manager {
 	return &Manager{plugins: plugins}
 }
 
-func (m *Manager) List(options *jmfzf.ListOptions) ([]jmfzf.Host, error) {
-	result := make([]jmfzf.Host, 0)
+func (m *Manager) List(options *jmfzf.ListOptions) ([]terminal.Host, error) {
+	result := make([]terminal.Host, 0)
 	for _, plugin := range m.plugins {
 		log.Println("fetching", "plugin", plugin.Name(), "hosts")
 		hosts, err := plugin.List(options)

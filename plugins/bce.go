@@ -6,6 +6,7 @@ import (
 	"github.com/baidubce/bce-sdk-go/services/bcc"
 	"github.com/baidubce/bce-sdk-go/services/bcc/api"
 	"github.com/raojinlin/jmfzf"
+	"github.com/raojinlin/jmfzf/pkg/terminal"
 )
 
 var bceRegionEndpoints = map[string]string{
@@ -50,7 +51,7 @@ func NewBcePlugin(options interface{}) (jmfzf.Plugin, error) {
 	return &BcePlugin{options: &opt, regionClients: regionClients}, nil
 }
 
-func (plugin *BcePlugin) List(options *jmfzf.ListOptions) ([]jmfzf.Host, error) {
+func (plugin *BcePlugin) List(options *jmfzf.ListOptions) ([]terminal.Host, error) {
 	var instances []api.InstanceModel
 	for _, client := range plugin.regionClients {
 		resp, err := client.ListInstances(&api.ListInstanceArgs{})
@@ -61,16 +62,19 @@ func (plugin *BcePlugin) List(options *jmfzf.ListOptions) ([]jmfzf.Host, error) 
 		instances = append(instances, resp.Instances...)
 	}
 
-	var result []jmfzf.Host
+	var result []terminal.Host
 	for _, instance := range instances {
 		result = append(
 			result,
-			jmfzf.Host{
-				Name:     fmt.Sprintf("%s(%s): %s", plugin.Name(), instance.ZoneName, instance.InstanceName),
-				PublicIP: instance.PublicIP,
-				LocalIP:  instance.InternalIP,
-				User:     "root",
-				Port:     22,
+			terminal.Host{
+				Type: terminal.TerminalTypeHost,
+				SSHInfo: terminal.SSHInfo{
+					Name:     fmt.Sprintf("%s(%s): %s", plugin.Name(), instance.ZoneName, instance.InstanceName),
+					PublicIP: instance.PublicIP,
+					LocalIP:  instance.InternalIP,
+					User:     "root",
+					Port:     22,
+				},
 			},
 		)
 	}
