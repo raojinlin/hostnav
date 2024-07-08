@@ -16,7 +16,7 @@ func main() {
 	}
 
 	inputChan := make(chan string)
-	pluginManager := manager.New([]string{"cvm", "bce", "jumpserver"}, cfg)
+	pluginManager := manager.New([]string{"bce", "cvm"}, cfg)
 
 	hosts, _ := pluginManager.List(nil)
 	go func() {

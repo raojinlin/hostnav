@@ -17,6 +17,7 @@ type CloudProviderConfig struct {
 	AccessKey       string   `json:"access_key" yaml:"access_key"`
 	AccessKeySecret string   `json:"access_key_secret" yaml:"access_key_secret"`
 	Zones           []string `json:"zones" yaml:"zones"`
+	Regions         []string `json:"regions" yaml:"regions"`
 	Tags            []Tag    `json:"tags" yaml:"tags"`
 }
 

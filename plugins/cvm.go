@@ -10,8 +10,8 @@ import (
 )
 
 type CVMPlugin struct {
-	options *jmfzf.CloudProviderConfig
-	cvm     *cvm.Client
+	options       *jmfzf.CloudProviderConfig
+	regionClients map[string]*cvm.Client
 }
 
 func NewCVMPlugin(options interface{}) (jmfzf.Plugin, error) {
@@ -25,32 +25,64 @@ func NewCVMPlugin(options interface{}) (jmfzf.Plugin, error) {
 	}
 
 	cert := common.NewCredential(opt.AccessKey, opt.AccessKeySecret)
-	client, err := cvm.NewClient(cert, "ap-shanghai", profile.NewClientProfile())
-	if err != nil {
-		return nil, fmt.Errorf("failed to create client: %v", err)
+	profile := profile.NewClientProfile()
+	regionClients := make(map[string]*cvm.Client)
+	for _, region := range opt.Regions {
+		client, err := cvm.NewClient(cert, region, profile)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create %s client: %v", region, err)
+		}
+
+		regionClients[region] = client
 	}
 
-	return &CVMPlugin{options: &opt, cvm: client}, nil
+	return &CVMPlugin{options: &opt, regionClients: regionClients}, nil
 }
 
 func (p *CVMPlugin) Name() string {
 	return "cvm"
 }
 
+func (p *CVMPlugin) listInstances(client *cvm.Client) ([]*cvm.Instance, error) {
+	var instances []*cvm.Instance
+	var offset int64
+	var limit int64 = 100
+	var total int64 = limit
+
+	for offset <= total {
+		req := cvm.NewDescribeInstancesRequest()
+		req.Limit = common.Int64Ptr(limit)
+		req.Offset = common.Int64Ptr(offset)
+		resp, err := client.DescribeInstances(req)
+		if err != nil {
+			return nil, fmt.Errorf("failed to describe instances: %v", err)
+		}
+		instances = append(instances, resp.Response.InstanceSet...)
+		total = *resp.Response.TotalCount
+		offset += limit
+	}
+
+	return instances, nil
+}
+
 func (p *CVMPlugin) List(options *jmfzf.ListOptions) ([]jmfzf.Host, error) {
 	// Implement the logic to list CVM instances
 	// Return a slice of Host structs
-	req := cvm.NewDescribeInstancesRequest()
-	req.Limit = common.Int64Ptr(100)
-	resp, err := p.cvm.DescribeInstances(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to describe instances: %v", err)
+	var instances []*cvm.Instance
+
+	for _, client := range p.regionClients {
+		result, err := p.listInstances(client)
+		if err != nil {
+			return nil, fmt.Errorf("failed to list instances: %v", err)
+		}
+
+		instances = append(instances, result...)
 	}
+
 	var result []jmfzf.Host
-	fmt.Println(*resp.Response.TotalCount)
-	for _, instance := range resp.Response.InstanceSet {
+	for _, instance := range instances {
 		result = append(result, jmfzf.Host{
-			Name:     p.Name() + ": " + *instance.InstanceName,
+			Name:     fmt.Sprintf("%s(%s): %s", p.Name(), *instance.Placement.Zone, *instance.InstanceName),
 			PublicIP: *instance.PublicIpAddresses[0],
 			Port:     22,
 			User:     "root",
