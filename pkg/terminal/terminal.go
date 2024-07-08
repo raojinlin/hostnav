@@ -84,10 +84,10 @@ type Container struct {
 
 func (c *Container) String() string {
 	if c.Pod != nil {
-		return fmt.Sprintf("%s %s", c.Pod.Name, c.Name)
+		return "pod:" + c.Pod.String() + " " + c.Name
 	}
 
-	return fmt.Sprintf("conatiner: %s", c.Name)
+	return fmt.Sprintf("docker: %s", c.Name)
 }
 
 func (c *Container) Connect() error {
