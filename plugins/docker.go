@@ -11,37 +11,40 @@ import (
 )
 
 type DockerPlugin struct {
-	cli *client.Client
+	option *jmfzf.DockerOption
+	cli    *client.Client
 }
 
-func NewDockerPlugin(option interface{}) (jmfzf.Plugin, error) {
-	var opt jmfzf.DockerConfig
-	if option != nil {
-		err := jmfzf.MapToStruct(option, &opt)
-		if err != nil {
-			return nil, err
-		}
+func NewDockerPlugin() *DockerPlugin {
+	return &DockerPlugin{option: &jmfzf.DockerOption{}}
+}
+
+func (p *DockerPlugin) Init(option interface{}) error {
+	if err := jmfzf.MapToStruct(option, p.option); err != nil {
+		return err
 	}
 
-	dockerVersion := opt.Version
+
+	dockerVersion := p.option.Version
 	if dockerVersion == "" {
 		dockerVersion = "1.43"
 	}
 
-	cli, err := client.NewClient(opt.Host, opt.Version, nil, nil)
+	cli, err := client.NewClient(p.option.Host, p.option.Version, nil, nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &DockerPlugin{cli: cli}, nil
+	p.cli = cli
+	return nil
 }
 
-func (plugin *DockerPlugin) Name() string {
+func (p *DockerPlugin) Name() string {
 	return "docker"
 }
 
-func (plugin *DockerPlugin) List(options *jmfzf.ListOptions) ([]terminal.Host, error) {
-	containers, err := plugin.cli.ContainerList(context.Background(), container.ListOptions{})
+func (p *DockerPlugin) List(options *ListOptions) ([]terminal.Host, error) {
+	containers, err := p.cli.ContainerList(context.Background(), container.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -63,4 +66,8 @@ func (plugin *DockerPlugin) List(options *jmfzf.ListOptions) ([]terminal.Host, e
 	}
 
 	return result, nil
+}
+
+func (p *DockerPlugin) Cache() bool {
+	return false
 }

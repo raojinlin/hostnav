@@ -2,7 +2,7 @@ package jmfzf
 
 import "encoding/json"
 
-func MapToStruct[T CloudProviderConfig | JumpServerCofnig | SshConfig | DockerConfig | KubernetesConfig](m interface{}, v *T) error {
+func MapToStruct[T CloudProviderOption | JumpServerOption | SshConfig | DockerOption | KubernetesOption](m interface{}, v *T) error {
 	data, err := json.Marshal(m)
 	if err != nil {
 		return err

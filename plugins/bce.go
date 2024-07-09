@@ -21,39 +21,41 @@ var bceRegionEndpoints = map[string]string{
 }
 
 type BcePlugin struct {
-	options       *jmfzf.CloudProviderConfig
+	option        *jmfzf.CloudProviderOption
 	regionClients map[string]*bcc.Client
 }
 
-func NewBcePlugin(options interface{}) (jmfzf.Plugin, error) {
-	var opt jmfzf.CloudProviderConfig
-	if options != nil {
-		if err := jmfzf.MapToStruct(options, &opt); err != nil {
-			return nil, err
-		}
+func NewBcePlugin() *BcePlugin {
+	return &BcePlugin{option: &jmfzf.CloudProviderOption{}}
+}
+
+func (p *BcePlugin) Init(option interface{}) error {
+	if err := jmfzf.MapToStruct(option, p.option); err != nil {
+		return err
 	}
 
 	regionClients := make(map[string]*bcc.Client)
-	for _, region := range opt.Regions {
+	for _, region := range p.option.Regions {
 		endpoint, ok := bceRegionEndpoints[region]
 		if !ok || endpoint == "" {
-			return nil, fmt.Errorf("invalid region: %s", region)
+			return fmt.Errorf("invalid region: %s", region)
 		}
 
-		bce, err := bcc.NewClient(opt.AccessKey, opt.AccessKeySecret, endpoint)
+		bce, err := bcc.NewClient(p.option.AccessKey, p.option.AccessKeySecret, endpoint)
 		if err != nil {
-			return nil, fmt.Errorf("create bce %s client: %v", region, err)
+			return fmt.Errorf("create bce %s client: %v", region, err)
 		}
 
 		regionClients[region] = bce
 	}
 
-	return &BcePlugin{options: &opt, regionClients: regionClients}, nil
+	p.regionClients = regionClients
+	return nil
 }
 
-func (plugin *BcePlugin) List(options *jmfzf.ListOptions) ([]terminal.Host, error) {
+func (p *BcePlugin) List(options *ListOptions) ([]terminal.Host, error) {
 	var instances []api.InstanceModel
-	for _, client := range plugin.regionClients {
+	for _, client := range p.regionClients {
 		resp, err := client.ListInstances(&api.ListInstanceArgs{})
 		if err != nil {
 			return nil, fmt.Errorf("list bce instances: %v", err)
@@ -69,11 +71,12 @@ func (plugin *BcePlugin) List(options *jmfzf.ListOptions) ([]terminal.Host, erro
 			terminal.Host{
 				Type: terminal.TerminalTypeHost,
 				SSHInfo: terminal.SSHInfo{
-					Name:     fmt.Sprintf("%s(%s): %s", plugin.Name(), instance.ZoneName, instance.InstanceName),
-					PublicIP: instance.PublicIP,
-					LocalIP:  instance.InternalIP,
-					User:     "root",
-					Port:     22,
+					Name:       fmt.Sprintf("%s(%s): %s", p.Name(), instance.ZoneName, instance.InstanceName),
+					PublicIP:   instance.PublicIP,
+					LocalIP:    instance.InternalIP,
+					User:       "root",
+					Port:       22,
+					UseLocalIP: p.option.ConnectionOptions.UseLocalIP,
 				},
 			},
 		)
@@ -82,6 +85,10 @@ func (plugin *BcePlugin) List(options *jmfzf.ListOptions) ([]terminal.Host, erro
 	return result, nil
 }
 
-func (plugin *BcePlugin) Name() string {
+func (p *BcePlugin) Name() string {
 	return "bce"
+}
+
+func (p *BcePlugin) Cache() bool {
+	return true
 }

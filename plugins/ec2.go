@@ -6,10 +6,10 @@ import (
 )
 
 type Ec2Plugin struct {
-	options *jmfzf.CloudProviderConfig
+	option *jmfzf.CloudProviderOption
 }
 
-func (e *Ec2Plugin) List(option *jmfzf.ListOptions) ([]terminal.Host, error) {
+func (p *Ec2Plugin) List(options *ListOptions) ([]terminal.Host, error) {
 	// Implement the logic to list EC2 instances
 	// Return a slice of Host structs
 	return []terminal.Host{}, nil
@@ -19,13 +19,14 @@ func (e *Ec2Plugin) Name() string {
 	return "ec2"
 }
 
-func NewEc2Plugin(options interface{}) (jmfzf.Plugin, error) {
-	var opt jmfzf.CloudProviderConfig
-	if options != nil {
-		err := jmfzf.MapToStruct(options, &opt)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return &Ec2Plugin{options: &opt}, nil
+func (e *Ec2Plugin) Cache() bool {
+	return true
+}
+
+func (e *Ec2Plugin) Init(option interface{}) error {
+	return nil
+}
+
+func NewEc2Plugin() *Ec2Plugin {
+	return &Ec2Plugin{}
 }

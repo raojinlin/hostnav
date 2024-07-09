@@ -8,6 +8,7 @@ const (
 	NamespaceDocker = "__docker__"
 )
 
+// Terminal represents a terminal that can be used to interact
 type Terminal interface {
 	Connect() error
 }
@@ -17,7 +18,9 @@ type TerminalType = string
 var tmux = &Tmux{}
 
 const (
-	TerminalTypeHost      TerminalType = "host"
+	// TerminalTypeHost represents a host that can be used to interact with ssh commands
+	TerminalTypeHost TerminalType = "host"
+	// TerminalTypeContainer represents a container that can be used to interact with docker/kubectl commands
 	TerminalTypeContainer TerminalType = "container"
 )
 

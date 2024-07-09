@@ -53,24 +53,20 @@ func (auth *SigAuth) Sign(r *http.Request) error {
 }
 
 type JumpServerPlugin struct {
-	options *jmfzf.JumpServerCofnig
+	option *jmfzf.JumpServerOption
 }
 
-func NewJumpServerPlugin(options interface{}) (jmfzf.Plugin, error) {
-	var opt jmfzf.JumpServerCofnig
-	if options != nil {
-		err := jmfzf.MapToStruct(options, &opt)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return &JumpServerPlugin{options: &opt}, nil
+func NewJumpServerPlugin() *JumpServerPlugin {
+	return &JumpServerPlugin{option: &jmfzf.JumpServerOption{}}
 }
 
-func (plugin *JumpServerPlugin) doRequest(method string, url string, headers map[string]string, body io.Reader) (*http.Response, error) {
+func (p *JumpServerPlugin) Init(option interface{}) error {
+	return jmfzf.MapToStruct(option, p.option)
+}
+
+func (p *JumpServerPlugin) doRequest(method string, url string, headers map[string]string, body io.Reader) (*http.Response, error) {
 	gmtFmt := "Mon, 02 Jan 2006 15:04:05 GMT"
-	req, err := http.NewRequest(method, plugin.options.Url+url, body)
+	req, err := http.NewRequest(method, p.option.Url+url, body)
 	req.Header.Add("Date", time.Now().Format(gmtFmt))
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("X-JMS-ORG", "00000000-0000-0000-0000-000000000002")
@@ -83,7 +79,7 @@ func (plugin *JumpServerPlugin) doRequest(method string, url string, headers map
 		return nil, err
 	}
 
-	auth := SigAuth{KeyID: plugin.options.AccessKey, SecretID: plugin.options.AccessKeySecret}
+	auth := SigAuth{KeyID: p.option.AccessKey, SecretID: p.option.AccessKeySecret}
 	if err := auth.Sign(req); err != nil {
 		return nil, err
 	}
@@ -97,8 +93,8 @@ func (plugin *JumpServerPlugin) doRequest(method string, url string, headers map
 	return resp, nil
 }
 
-func (plugin *JumpServerPlugin) getUserPermsAssets() ([]Asset, error) {
-	resp, err := plugin.doRequest("GET", "/api/v1/perms/users/assets/tree/", nil, nil)
+func (p *JumpServerPlugin) getUserPermsAssets() ([]Asset, error) {
+	resp, err := p.doRequest("GET", "/api/v1/perms/users/assets/tree/", nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -118,8 +114,8 @@ func (plugin *JumpServerPlugin) getUserPermsAssets() ([]Asset, error) {
 	return assets, nil
 }
 
-func (plugin *JumpServerPlugin) List(options *jmfzf.ListOptions) ([]terminal.Host, error) {
-	assets, err := plugin.getUserPermsAssets()
+func (p *JumpServerPlugin) List(options *ListOptions) ([]terminal.Host, error) {
+	assets, err := p.getUserPermsAssets()
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +126,7 @@ func (plugin *JumpServerPlugin) List(options *jmfzf.ListOptions) ([]terminal.Hos
 			Type: terminal.TerminalTypeHost,
 			SSHInfo: terminal.SSHInfo{
 				PublicIP: asset.Meta.Data.IP,
-				Name:     plugin.Name() + ": " + asset.Name,
+				Name:     p.Name() + ": " + asset.Name,
 				Port:     22,
 				User:     "root",
 			},
@@ -140,6 +136,10 @@ func (plugin *JumpServerPlugin) List(options *jmfzf.ListOptions) ([]terminal.Hos
 	return hosts, nil
 }
 
-func (plugin *JumpServerPlugin) Name() string {
+func (p *JumpServerPlugin) Name() string {
 	return "jumpserver"
+}
+
+func (p *JumpServerPlugin) Cache() bool {
+	return true
 }

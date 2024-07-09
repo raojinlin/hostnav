@@ -1,4 +1,4 @@
-package jmfzf
+package plugins
 
 import "github.com/raojinlin/jmfzf/pkg/terminal"
 
@@ -11,4 +11,6 @@ type ListOptions struct {
 type Plugin interface {
 	List(option *ListOptions) ([]terminal.Host, error)
 	Name() string
+	Cache() bool
+	Init(option interface{}) error
 }

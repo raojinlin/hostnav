@@ -11,33 +11,34 @@ import (
 )
 
 type CVMPlugin struct {
-	options       *jmfzf.CloudProviderConfig
+	option        *jmfzf.CloudProviderOption
 	regionClients map[string]*cvm.Client
 }
 
-func NewCVMPlugin(options interface{}) (jmfzf.Plugin, error) {
-	var opt jmfzf.CloudProviderConfig
-	var err error
-	if options != nil {
-		err = jmfzf.MapToStruct(options, &opt)
-		if err != nil {
-			return nil, err
-		}
+func NewCVMPlugin() *CVMPlugin {
+	return &CVMPlugin{option: &jmfzf.CloudProviderOption{}}
+}
+
+func (p *CVMPlugin) Init(option interface{}) error {
+	err := jmfzf.MapToStruct(option, p.option)
+	if err != nil {
+		return err
 	}
 
-	cert := common.NewCredential(opt.AccessKey, opt.AccessKeySecret)
+	cert := common.NewCredential(p.option.AccessKey, p.option.AccessKeySecret)
 	profile := profile.NewClientProfile()
 	regionClients := make(map[string]*cvm.Client)
-	for _, region := range opt.Regions {
+	for _, region := range p.option.Regions {
 		client, err := cvm.NewClient(cert, region, profile)
 		if err != nil {
-			return nil, fmt.Errorf("failed to create %s client: %v", region, err)
+			return fmt.Errorf("failed to create %s client: %v", region, err)
 		}
 
 		regionClients[region] = client
 	}
 
-	return &CVMPlugin{options: &opt, regionClients: regionClients}, nil
+	p.regionClients = regionClients
+	return nil
 }
 
 func (p *CVMPlugin) Name() string {
@@ -66,7 +67,7 @@ func (p *CVMPlugin) listInstances(client *cvm.Client) ([]*cvm.Instance, error) {
 	return instances, nil
 }
 
-func (p *CVMPlugin) List(options *jmfzf.ListOptions) ([]terminal.Host, error) {
+func (p *CVMPlugin) List(options *ListOptions) ([]terminal.Host, error) {
 	// Implement the logic to list CVM instances
 	// Return a slice of Host structs
 	var instances []*cvm.Instance
@@ -85,14 +86,19 @@ func (p *CVMPlugin) List(options *jmfzf.ListOptions) ([]terminal.Host, error) {
 		result = append(result, terminal.Host{
 			Type: terminal.TerminalTypeHost,
 			SSHInfo: terminal.SSHInfo{
-				Name:     fmt.Sprintf("%s(%s): %s", p.Name(), *instance.Placement.Zone, *instance.InstanceName),
-				PublicIP: *instance.PublicIpAddresses[0],
-				Port:     22,
-				User:     "root",
-				LocalIP:  *instance.PrivateIpAddresses[0],
+				Name:       fmt.Sprintf("%s(%s): %s", p.Name(), *instance.Placement.Zone, *instance.InstanceName),
+				PublicIP:   *instance.PublicIpAddresses[0],
+				Port:       22,
+				User:       "root",
+				LocalIP:    *instance.PrivateIpAddresses[0],
+				UseLocalIP: p.option.ConnectionOptions.UseLocalIP,
 			},
 		})
 	}
 
 	return result, nil
+}
+
+func (p *CVMPlugin) Cache() bool {
+	return true
 }

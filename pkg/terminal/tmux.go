@@ -12,10 +12,12 @@ import (
 type Tmux struct{}
 
 func (t *Tmux) NewWindow(title string, command string) error {
+	// fall back to the default window
 	if !t.inTmux() || !t.hasTmux() {
 		return t.exec(command)
 	}
 
+	// use tmux if available
 	cmd := t.execTmux("new-window", "-n", title, command)
 	if cmd == nil {
 		return nil

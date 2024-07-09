@@ -12,36 +12,37 @@ import (
 )
 
 type KubernetesPlugin struct {
-	config *jmfzf.KubernetesConfig
+	option *jmfzf.KubernetesOption
 	client *kubernetes.Clientset
 }
 
-func NewKubernetesPlugin(options interface{}) (jmfzf.Plugin, error) {
-	var config jmfzf.KubernetesConfig
-	if options != nil {
-		err := jmfzf.MapToStruct(options, &config)
-		if err != nil {
-			return nil, err
-		}
-	}
-	k8sConfig, err := clientcmd.BuildConfigFromFlags("", config.KubeConfig)
+func NewKubernetesPlugin() *KubernetesPlugin {
+	return &KubernetesPlugin{option: &jmfzf.KubernetesOption{}}
+}
+
+func (p *KubernetesPlugin) Init(option interface{}) error {
+	err := jmfzf.MapToStruct(option, p.option)
 	if err != nil {
-		return nil, err
+		return err
+	}
+	k8sConfig, err := clientcmd.BuildConfigFromFlags("", p.option.KubeConfig)
+	if err != nil {
+		return err
 	}
 
 	client, err := kubernetes.NewForConfig(k8sConfig)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &KubernetesPlugin{config: &config, client: client}, nil
+	p.client = client
+	return nil
 }
 
-func (plugin *KubernetesPlugin) List(options *jmfzf.ListOptions) ([]terminal.Host, error) {
+func (p *KubernetesPlugin) List(options *ListOptions) ([]terminal.Host, error) {
 	var result []terminal.Host
-	for _, namespace := range plugin.config.Namespaces {
-		podsInterface := plugin.client.CoreV1().Pods(namespace)
-		podList, err := podsInterface.List(context.Background(), metav1.ListOptions{})
+	for _, namespace := range p.option.Namespaces {
+		podList, err := p.client.CoreV1().Pods(namespace).List(context.Background(), metav1.ListOptions{})
 		if err != nil {
 			return nil, err
 		}
@@ -55,7 +56,7 @@ func (plugin *KubernetesPlugin) List(options *jmfzf.ListOptions) ([]terminal.Hos
 						ContainerInfo: terminal.Pod{
 							Name:       pod.Name,
 							Namespace:  pod.Namespace,
-							KubeConfig: plugin.config.KubeConfig,
+							KubeConfig: p.option.KubeConfig,
 							Container: terminal.Container{
 								Name:    container.Name,
 								Command: "/bin/sh",
@@ -72,6 +73,10 @@ func (plugin *KubernetesPlugin) List(options *jmfzf.ListOptions) ([]terminal.Hos
 	return result, nil
 }
 
-func (plugin *KubernetesPlugin) Name() string {
+func (p *KubernetesPlugin) Name() string {
 	return "kubernetes"
+}
+
+func (p *KubernetesPlugin) Cache() bool {
+	return false
 }

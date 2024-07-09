@@ -12,16 +12,19 @@ type Tag struct {
 	Value string `json:"value" yaml:"value"`
 }
 
-type CloudProviderConfig struct {
-	Endpoint        string   `json:"endpoint" yaml:"endpoint"`
-	AccessKey       string   `json:"access_key" yaml:"access_key"`
-	AccessKeySecret string   `json:"access_key_secret" yaml:"access_key_secret"`
-	Zones           []string `json:"zones" yaml:"zones"`
-	Regions         []string `json:"regions" yaml:"regions"`
-	Tags            []Tag    `json:"tags" yaml:"tags"`
+type CloudProviderOption struct {
+	Endpoint          string   `json:"endpoint" yaml:"endpoint"`
+	AccessKey         string   `json:"access_key" yaml:"access_key"`
+	AccessKeySecret   string   `json:"access_key_secret" yaml:"access_key_secret"`
+	Zones             []string `json:"zones" yaml:"zones"`
+	Regions           []string `json:"regions" yaml:"regions"`
+	Tags              []Tag    `json:"tags" yaml:"tags"`
+	ConnectionOptions struct {
+		UseLocalIP bool `json:"use_local_ip" yaml:"use_local_ip"`
+	} `json:"connections" yaml:"connections"`
 }
 
-type JumpServerCofnig struct {
+type JumpServerOption struct {
 	AccessKey       string `json:"access_key" yaml:"access_key"`
 	AccessKeySecret string `json:"access_key_secret" yaml:"access_key_secret"`
 	Url             string `json:"url" yaml:"url"`
@@ -30,12 +33,12 @@ type JumpServerCofnig struct {
 
 type SshConfig []string
 
-type DockerConfig struct {
+type DockerOption struct {
 	Host    string `json:"host" yaml:"host"`
 	Version string `json:"version" yaml:"version"`
 }
 
-type KubernetesConfig struct {
+type KubernetesOption struct {
 	KubeConfig string   `json:"kubeconfig" yaml:"kubeconfig"`
 	Namespaces []string `json:"namespaces" yaml:"namespaces"`
 }
