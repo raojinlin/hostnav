@@ -23,7 +23,7 @@ func exit(code int, err error) {
 func main() {
 	homedir, _ := os.UserHomeDir()
 	var configfile string = path.Join(homedir, ".jmfzf.yaml")
-	flag.StringVar(&configfile, "config", configfile, "specify the configuration file")
+	flag.StringVar(&configfile, "config", configfile, "path to configuration file")
 	flag.Parse()
 	cfg, err := jmfzf.NewConfig(configfile)
 	if err != nil {
