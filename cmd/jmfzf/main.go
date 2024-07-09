@@ -1,9 +1,11 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log/slog"
 	"os"
+	"path"
 
 	fzf "github.com/junegunn/fzf/src"
 	"github.com/raojinlin/jmfzf"
@@ -11,10 +13,21 @@ import (
 	"github.com/raojinlin/jmfzf/pkg/terminal"
 )
 
-func main() {
-	cfg, err := jmfzf.NewConfig("./config.yaml")
+func exit(code int, err error) {
 	if err != nil {
-		panic(err)
+		fmt.Fprintln(os.Stderr, err.Error())
+	}
+	os.Exit(code)
+}
+
+func main() {
+	homedir, _ := os.UserHomeDir()
+	var configfile string = path.Join(homedir, ".jmfzf.yaml")
+	flag.StringVar(&configfile, "config", configfile, "specify the configuration file")
+	flag.Parse()
+	cfg, err := jmfzf.NewConfig(configfile)
+	if err != nil {
+		exit(1, err)
 	}
 
 	inputChan := make(chan string)
@@ -44,13 +57,6 @@ func main() {
 		}
 		done <- struct{}{}
 	}()
-
-	exit := func(code int, err error) {
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err.Error())
-		}
-		os.Exit(code)
-	}
 
 	// Build fzf.Options
 	options, err := fzf.ParseOptions(
