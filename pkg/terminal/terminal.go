@@ -2,8 +2,7 @@ package terminal
 
 import (
 	"fmt"
-	"os"
-	"os/exec"
+	"strings"
 )
 
 type Terminal interface {
@@ -11,6 +10,8 @@ type Terminal interface {
 }
 
 type TerminalType = string
+
+var tmux = &Tmux{}
 
 const (
 	TerminalTypeHost      TerminalType = "host"
@@ -24,6 +25,10 @@ type SSHInfo struct {
 	Port         int    `json:"port" yaml:"port"`
 	User         string `json:"user" yaml:"user"`
 	IdentityFile string `json:"identity_file" yaml:"identity_file"`
+}
+
+func (s *SSHInfo) Connect() error {
+	return tmux.NewWindow(s.Name, strings.Join([]string{"ssh", fmt.Sprintf("%s@%s", s.User, s.PublicIP), "-p", fmt.Sprintf("%d", s.Port)}, " "))
 }
 
 type Host struct {
@@ -42,11 +47,7 @@ func (h *Host) String() string {
 
 func (h *Host) Connect() error {
 	if h.Type == TerminalTypeHost {
-		cmd := exec.Command("ssh", fmt.Sprintf("%s@%s", h.SSHInfo.User, h.SSHInfo.PublicIP), "-p", fmt.Sprintf("%d", h.SSHInfo.Port))
-		cmd.Stdin = os.Stdin
-		cmd.Stderr = os.Stderr
-		cmd.Stdout = os.Stdout
-		return cmd.Run()
+		return h.SSHInfo.Connect()
 	}
 
 	if h.Type == TerminalTypeContainer {
@@ -67,12 +68,8 @@ func (p *Pod) String() string {
 }
 
 func (p *Pod) Connect() error {
-	cmd := exec.Command("kubectl", "--config", p.KubeConfig, "exec", "-n", p.Namespace, "-it", p.Name, "--", "/bin/sh")
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-
-	return cmd.Run()
+	command := fmt.Sprintf("kubectl --config %s exec -n %s -it %s -- /bin/sh", p.KubeConfig, p.Namespace, p.Name)
+	return tmux.NewWindow("Pod: "+p.Name, command)
 }
 
 type Container struct {
@@ -95,9 +92,5 @@ func (c *Container) Connect() error {
 		return c.Pod.Connect()
 	}
 
-	cmd := exec.Command("docker", "exec", "-it", c.Name, c.Command)
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = os.Stdout
-	cmd.Stdin = os.Stdin
-	return cmd.Run()
+	return tmux.NewWindow("container: "+c.Name, fmt.Sprintf("docker exec -it %s %s", c.Name, c.Command))
 }
