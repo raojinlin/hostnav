@@ -18,7 +18,7 @@ func main() {
 	}
 
 	inputChan := make(chan string)
-	hostManager := manager.New([]string{"docker", "bce", "cvm", "jumpserver"}, cfg)
+	hostManager := manager.New([]string{"docker", "kubernetes"}, cfg)
 
 	hosts, _ := hostManager.List(nil)
 	indexedHosts := make(map[string]terminal.Host)
@@ -55,7 +55,7 @@ func main() {
 	// Build fzf.Options
 	options, err := fzf.ParseOptions(
 		true, // whether to load defaults ($FZF_DEFAULT_OPTS_FILE and $FZF_DEFAULT_OPTS)
-		[]string{"--multi", "--reverse", "--border"},
+		[]string{"--multi", "--reverse"},
 	)
 	if err != nil {
 		exit(fzf.ExitError, err)

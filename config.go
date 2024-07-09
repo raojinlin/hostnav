@@ -36,7 +36,7 @@ type DockerConfig struct {
 }
 
 type KubernetesConfig struct {
-	KubeConfig string   `json:"kube_config" yaml:"kube_config"`
+	KubeConfig string   `json:"kubeconfig" yaml:"kubeconfig"`
 	Namespaces []string `json:"namespaces" yaml:"namespaces"`
 }
 

@@ -2,7 +2,10 @@ package terminal
 
 import (
 	"fmt"
-	"strings"
+)
+
+const (
+	NamespaceDocker = "__docker__"
 )
 
 type Terminal interface {
@@ -25,16 +28,42 @@ type SSHInfo struct {
 	Port         int    `json:"port" yaml:"port"`
 	User         string `json:"user" yaml:"user"`
 	IdentityFile string `json:"identity_file" yaml:"identity_file"`
+	UseLocalIP   bool   `json:"use_local_ip" yaml:"use_local_ip"`
 }
 
 func (s *SSHInfo) Connect() error {
-	return tmux.NewWindow(s.Name, strings.Join([]string{"ssh", fmt.Sprintf("%s@%s", s.User, s.PublicIP), "-p", fmt.Sprintf("%d", s.Port)}, " "))
+	opts := ""
+	if s.IdentityFile != "" {
+		opts += " -i " + s.IdentityFile
+	}
+
+	dest := s.PublicIP
+	if s.UseLocalIP && s.LocalIP != "" {
+		dest = s.LocalIP
+	}
+
+	user := s.User
+	if user == "" {
+		user = "root"
+	}
+
+	port := s.Port
+	if port == 0 {
+		port = 22
+	}
+
+	command := fmt.Sprintf("ssh %s %s@%s -p%d", opts, user, dest, port)
+	return tmux.NewWindow(s.Name, command)
+}
+
+func (s *SSHInfo) String() string {
+	return fmt.Sprintf("%s %s %s", s.Name, s.PublicIP, s.LocalIP)
 }
 
 type Host struct {
 	Type          TerminalType `json:"type" yaml:"type"`
 	SSHInfo       SSHInfo      `json:"ssh_info" yaml:"ssh_info"`
-	ContainerInfo Container    `json:"container_info" yaml:"container_info"`
+	ContainerInfo Pod          `json:"container_info" yaml:"container_info"`
 }
 
 func (h *Host) String() string {
@@ -42,7 +71,7 @@ func (h *Host) String() string {
 		return h.ContainerInfo.String()
 	}
 
-	return fmt.Sprintf("%s %s", h.SSHInfo.Name, h.SSHInfo.PublicIP)
+	return h.SSHInfo.String()
 }
 
 func (h *Host) Connect() error {
@@ -58,39 +87,35 @@ func (h *Host) Connect() error {
 }
 
 type Pod struct {
-	Name       string `json:"name" yaml:"name"`
-	KubeConfig string `json:"kube_config" yaml:"kube_config"`
-	Namespace  string `json:"namespace" yaml:"namespace"`
+	Name       string    `json:"name" yaml:"name"`
+	KubeConfig string    `json:"kube_config" yaml:"kube_config"`
+	Namespace  string    `json:"namespace" yaml:"namespace"`
+	Container  Container `json:"container" yaml:"container"`
 }
 
 func (p *Pod) String() string {
-	return fmt.Sprintf("%s/%s", p.Namespace, p.Name)
+	if p.Namespace == NamespaceDocker {
+		return fmt.Sprintf("container: %s", p.Container.Name)
+	}
+
+	return fmt.Sprintf("pod: %s/%s", p.Namespace, p.Name)
 }
 
 func (p *Pod) Connect() error {
-	command := fmt.Sprintf("kubectl --config %s exec -n %s -it %s -- /bin/sh", p.KubeConfig, p.Namespace, p.Name)
-	return tmux.NewWindow("Pod: "+p.Name, command)
+	if p.Namespace == NamespaceDocker {
+		return tmux.NewWindow("Container: "+p.Container.Name, fmt.Sprintf("docker exec -it %s %s", p.Container.Name, p.Container.Command))
+	}
+
+	command := fmt.Sprintf("kubectl --kubeconfig %s exec -n %s -it %s -c %s -- %s", p.KubeConfig, p.Namespace, p.Name, p.Container.Name, p.Container.Command)
+	return tmux.NewWindow(fmt.Sprintf("Pod: %s/%s", p.Name, p.Container.Name), command)
 }
 
 type Container struct {
 	Id      string `json:"id" yaml:"id"`
 	Name    string `json:"name" yaml:"name"`
 	Command string `json:"command" yaml:"command"`
-	Pod     *Pod   `json:"pod" yaml:"pod"`
 }
 
 func (c *Container) String() string {
-	if c.Pod != nil {
-		return "pod:" + c.Pod.String() + " " + c.Name
-	}
-
-	return fmt.Sprintf("docker: %s", c.Name)
-}
-
-func (c *Container) Connect() error {
-	if c.Pod != nil {
-		return c.Pod.Connect()
-	}
-
-	return tmux.NewWindow("container: "+c.Name, fmt.Sprintf("docker exec -it %s %s", c.Name, c.Command))
+	return fmt.Sprintf("container: %s", c.Name)
 }

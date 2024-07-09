@@ -50,10 +50,14 @@ func (plugin *DockerPlugin) List(options *jmfzf.ListOptions) ([]terminal.Host, e
 	for _, container := range containers {
 		result = append(result, terminal.Host{
 			Type: terminal.TerminalTypeContainer,
-			ContainerInfo: terminal.Container{
-				Name:    strings.Trim(container.Names[0], "/"),
-				Id:      container.ID,
-				Command: "/bin/sh",
+			ContainerInfo: terminal.Pod{
+				Name:      "docker",
+				Namespace: terminal.NamespaceDocker,
+				Container: terminal.Container{
+					Id:      container.ID,
+					Name:    strings.Trim(container.Names[0], "/"),
+					Command: "/bin/sh",
+				},
 			},
 		})
 	}

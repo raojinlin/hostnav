@@ -15,6 +15,7 @@ var pluginConstructor = map[string]func(option interface{}) (jmfzf.Plugin, error
 	"jumpserver": plugins.NewJumpServerPlugin,
 	"bce":        plugins.NewBcePlugin,
 	"docker":     plugins.NewDockerPlugin,
+	"kubernetes": plugins.NewKubernetesPlugin,
 }
 
 type Manager struct {
