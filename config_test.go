@@ -1,4 +1,4 @@
-package jmfzf
+package hostnav 
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ func TestReadConfig(t *testing.T) {
 		t.Fatal("No plugins")
 	}
 
-	fmt.Println(cfg.CustomPluginsDir)
+	fmt.Println(cfg.DefaultPlugins)
 	for k, p := range cfg.Plugins {
 		fmt.Println(k, p)
 	}

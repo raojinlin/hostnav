@@ -6,12 +6,15 @@ import (
 	"log/slog"
 	"os"
 	"path"
+	"strings"
 
 	fzf "github.com/junegunn/fzf/src"
-	"github.com/raojinlin/jmfzf"
-	"github.com/raojinlin/jmfzf/pkg/manager"
-	"github.com/raojinlin/jmfzf/pkg/terminal"
+	"github.com/raojinlin/hostnav"
+	"github.com/raojinlin/hostnav/pkg/manager"
+	"github.com/raojinlin/hostnav/pkg/terminal"
 )
+
+const quitSignalCode int = 130
 
 func exit(code int, err error) {
 	if err != nil {
@@ -22,18 +25,37 @@ func exit(code int, err error) {
 
 func main() {
 	homedir, _ := os.UserHomeDir()
-	var configfile string = path.Join(homedir, ".jmfzf.yaml")
+	var configfile string = path.Join(homedir, ".hostnav.yaml")
+	// plugins to use, mutiple plugins coma separated
+	var plugins string
 	flag.StringVar(&configfile, "config", configfile, "path to configuration file")
+	flag.StringVar(&plugins, "plugins", plugins, "plugin to use, mutiple plugins comma separated")
+
 	flag.Parse()
-	cfg, err := jmfzf.NewConfig(configfile)
+	cfg, err := hostnav.NewConfig(configfile)
 	if err != nil {
 		exit(1, err)
 	}
 
 	inputChan := make(chan string)
-	hostManager := manager.New([]string{"docker", "kubernetes"}, cfg)
+	enabledPlugins := []string{}
+	if len(plugins) == 0 {
+		enabledPlugins = cfg.DefaultPlugins
+	} else {
+		for _, plugin := range strings.Split(plugins, ",") {
+			if strings.Trim(plugin, ", ") != "" {
+				enabledPlugins = append(enabledPlugins, plugin)
+			}
+		}
+	}
+
+	hostManager := manager.New(enabledPlugins, cfg)
 
 	hosts, _ := hostManager.List(nil)
+	if len(hosts) == 0 {
+		slog.Warn("no host information")
+		return
+	}
 	indexedHosts := make(map[string]terminal.Host)
 	go func() {
 		for _, host := range hosts {
@@ -51,6 +73,7 @@ func main() {
 		defer close(outputChan)
 		output := <-outputChan
 		host := indexedHosts[output]
+		slog.Info("connect to", "host", host.String())
 		err := host.Connect()
 		if err != nil {
 			slog.Error("Error connecting to host", "error", err)
@@ -61,7 +84,7 @@ func main() {
 	// Build fzf.Options
 	options, err := fzf.ParseOptions(
 		true, // whether to load defaults ($FZF_DEFAULT_OPTS_FILE and $FZF_DEFAULT_OPTS)
-		[]string{"--multi", "--reverse"},
+		[]string{"--reverse", "--tmux"},
 	)
 	if err != nil {
 		exit(fzf.ExitError, err)
@@ -71,11 +94,18 @@ func main() {
 	options.Input = inputChan
 	options.Output = outputChan
 
-	code, err := fzf.Run(options)
-	if err != nil {
-		exit(code, err)
-	}
+	go func() {
 
-	// 等待输出协程完成
+		code, err := fzf.Run(options)
+		if err != nil {
+			exit(code, err)
+		}
+
+		// quit code
+		if code == quitSignalCode {
+			done <- struct{}{}
+		}
+	}()
+
 	<-done
 }

@@ -1,6 +1,6 @@
-# jmfzf
+# hostnav
 
-jmfzf 是一个集成了 tmux 和 fzf 的终端工具，旨在简化服务器资源的管理和连接。通过插件系统，jmfzf 支持多种云平台、容器平台等资源的管理，提供快速、高效的终端连接体验。
+hostnav 是一个集成了 tmux 和 fzf 的终端工具，旨在简化服务器资源的管理和连接。通过插件系统，hostnav 支持多种云平台、容器平台等资源的管理，提供快速、高效的终端连接体验。
 
 ## 功能特性
 
@@ -16,11 +16,11 @@ jmfzf 是一个集成了 tmux 和 fzf 的终端工具，旨在简化服务器资
 确保已安装 Go 环境。
 
 ```bash
-go get -u github.com/raojinlin/jmfzf
+go get -u github.com/raojinlin/hostnav
 ```
 
 ## 使用前提
-在运行 jmfzf 之前，请确保以下命令已正确安装：
+在运行 hostnav 之前，请确保以下命令已正确安装：
 
 - Kubectl：用于管理 Kubernetes 集群。
 - Docker：用于管理和运行容器。
@@ -59,27 +59,19 @@ sudo apt-get install -y tmux
 以下是 `config.yaml` 配置文件的示例，并附上注释：
 
 ```yaml
-# 默认使用的插件名称
-default_plugin: "example"
-
-# 日志配置
-logger:
-  # 日志级别，可选值: debug, info, warn, error
-  level: "info"
-  # 是否启用日志
-  enabled: true
-  # 日志文件路径
-  file: "jmfzf.log"
+# 默认使用的插件名称列表
+default_plugins:
+- docker
+- kubernetes
+- cvm
+- jumpserver
 
 # TMUX 配置
 tmux:
   # 是否启用 TMUX
   enabled: true
   # TMUX 会话名称
-  session_name: "jmfzf"
-
-# 自定义插件目录
-custom_plugins_dir: "/path/to/custom/plugins"
+  session_name: "hostnav"
 
 # 插件配置
 plugins:
@@ -104,11 +96,11 @@ plugins:
 ## 插件开发指南
 
 ### 插件的作用
-插件是 jmfzf 的核心，通过插件系统，用户可以扩展 jmfzf 的功能，以支持更多的云平台、容器平台和其他资源的管理。插件的主要作用包括：
+插件是 hostnav 的核心，通过插件系统，用户可以扩展 hostnav 的功能，以支持更多的云平台、容器平台和其他资源的管理。插件的主要作用包括：
 
 - 资源查询：从不同平台获取资源信息。
 - 终端连接：提供连接到资源的功能。
-- 插件化开发：用户可以开发自定义插件，扩展 jmfzf 的功能。
+- 插件化开发：用户可以开发自定义插件，扩展 hostnav 的功能。
 
 ### 插件开发流程
 
@@ -137,20 +129,20 @@ type Plugin interface {
 package my_plugin
 
 import (
-    "github.com/raojinlin/jmfzf"
-    "github.com/raojinlin/jmfzf/pkg/terminal"
+    "github.com/raojinlin/hostnav"
+    "github.com/raojinlin/hostnav/pkg/terminal"
 )
 
 type MyPlugin struct {
-    option *jmfzf.CloudProviderOption
+    option *hostnav.CloudProviderOption
 }
 
 func NewMyPlugin() *MyPlugin {
-    return &MyPlugin{option: &jmfzf.CloudProviderOption{}}
+    return &MyPlugin{option: &hostnav.CloudProviderOption{}}
 }
 
 func (p *MyPlugin) Init(option interface{}) error {
-    err := jmfzf.MapToStruct(option, p.option)
+    err := hostnav.MapToStruct(option, p.option)
     if err != nil {
         return err
     }
@@ -185,7 +177,7 @@ func (p *MyPlugin) Cache() bool {
 
 4. 配置插件
 
-在 jmfzf 的配置文件中添加自定义插件的配置。
+在 hostnav 的配置文件中添加自定义插件的配置。
 ```yaml
 custom_plugins_dir: "/path/to/custom/plugins"
 
@@ -203,8 +195,8 @@ plugins:
 
 5. 编译和运行
 ```go
-go build -o jmfzf .
-./jmfzf -config ~/.jmfzf.yaml
+go build -o hostnav .
+./hostnav -config ~/.hostnav.yaml
 
 ```
 
@@ -213,8 +205,8 @@ go build -o jmfzf .
 欢迎提交问题和拉取请求。要开始贡献，请克隆此仓库并创建一个新的分支进行更改。
 
 ```bash
-git clone https://github.com/raojinlin/jmfzf.git
-cd jmfzf
+git clone https://github.com/raojinlin/hostnav.git
+cd hostnav
 git checkout -b new-feature
 
 ```

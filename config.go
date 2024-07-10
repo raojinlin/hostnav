@@ -1,4 +1,4 @@
-package jmfzf
+package hostnav 
 
 import (
 	"fmt"
@@ -29,6 +29,7 @@ type JumpServerOption struct {
 	AccessKeySecret string `json:"access_key_secret" yaml:"access_key_secret"`
 	Url             string `json:"url" yaml:"url"`
 	ApiToken        string `json:"api_token" yaml:"api_token"`
+	Search          string `json:"search" yaml:"search"`
 }
 
 type SshConfig []string
@@ -44,8 +45,8 @@ type KubernetesOption struct {
 }
 
 type Config struct {
-	CustomPluginsDir string                 `json:"custom_plugins_dir" yaml:"custom_plugins_dir"`
-	Plugins          map[string]interface{} `json:"plugins" yaml:"plugins"`
+	DefaultPlugins []string               `json:"default_plugins" yaml:"default_plugins"`
+	Plugins        map[string]interface{} `json:"plugins" yaml:"plugins"`
 }
 
 func NewConfig(configfile string) (*Config, error) {

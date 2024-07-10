@@ -3,8 +3,8 @@ package plugins
 import (
 	"context"
 
-	"github.com/raojinlin/jmfzf"
-	"github.com/raojinlin/jmfzf/pkg/terminal"
+	"github.com/raojinlin/hostnav"
+	"github.com/raojinlin/hostnav/pkg/terminal"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -12,16 +12,16 @@ import (
 )
 
 type KubernetesPlugin struct {
-	option *jmfzf.KubernetesOption
+	option *hostnav.KubernetesOption
 	client *kubernetes.Clientset
 }
 
 func NewKubernetesPlugin() *KubernetesPlugin {
-	return &KubernetesPlugin{option: &jmfzf.KubernetesOption{}}
+	return &KubernetesPlugin{option: &hostnav.KubernetesOption{}}
 }
 
 func (p *KubernetesPlugin) Init(option interface{}) error {
-	err := jmfzf.MapToStruct(option, p.option)
+	err := hostnav.MapToStruct(option, p.option)
 	if err != nil {
 		return err
 	}
@@ -48,8 +48,15 @@ func (p *KubernetesPlugin) List(options *ListOptions) ([]terminal.Host, error) {
 		}
 
 		for _, pod := range podList.Items {
+			isReady := false
+			for _, podCondition := range pod.Status.Conditions {
+				if podCondition.Type == v1.ContainersReady && podCondition.Status == v1.ConditionTrue {
+					isReady = true
+				}
+			}
+
 			// filter out pods that are not running
-			if pod.Status.Phase == v1.PodRunning {
+			if pod.Status.Phase == v1.PodRunning && isReady {
 				for _, container := range pod.Spec.Containers {
 					result = append(result, terminal.Host{
 						Type: terminal.TerminalTypeContainer,

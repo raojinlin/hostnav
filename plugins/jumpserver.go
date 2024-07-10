@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/raojinlin/jmfzf"
-	"github.com/raojinlin/jmfzf/pkg/terminal"
+	"github.com/raojinlin/hostnav"
+	"github.com/raojinlin/hostnav/pkg/terminal"
 	"gopkg.in/twindagger/httpsig.v1"
 )
 
@@ -53,20 +53,20 @@ func (auth *SigAuth) Sign(r *http.Request) error {
 }
 
 type JumpServerPlugin struct {
-	option *jmfzf.JumpServerOption
+	option *hostnav.JumpServerOption
 }
 
 func NewJumpServerPlugin() *JumpServerPlugin {
-	return &JumpServerPlugin{option: &jmfzf.JumpServerOption{}}
+	return &JumpServerPlugin{option: &hostnav.JumpServerOption{}}
 }
 
 func (p *JumpServerPlugin) Init(option interface{}) error {
-	return jmfzf.MapToStruct(option, p.option)
+	return hostnav.MapToStruct(option, p.option)
 }
 
-func (p *JumpServerPlugin) doRequest(method string, url string, headers map[string]string, body io.Reader) (*http.Response, error) {
+func (p *JumpServerPlugin) doRequest(method string, path string, headers map[string]string, body io.Reader) (*http.Response, error) {
 	gmtFmt := "Mon, 02 Jan 2006 15:04:05 GMT"
-	req, err := http.NewRequest(method, p.option.Url+url, body)
+	req, err := http.NewRequest(method, p.option.Url+path, body)
 	req.Header.Add("Date", time.Now().Format(gmtFmt))
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("X-JMS-ORG", "00000000-0000-0000-0000-000000000002")
@@ -94,7 +94,11 @@ func (p *JumpServerPlugin) doRequest(method string, url string, headers map[stri
 }
 
 func (p *JumpServerPlugin) getUserPermsAssets() ([]Asset, error) {
-	resp, err := p.doRequest("GET", "/api/v1/perms/users/assets/tree/", nil, nil)
+	apiPath := "/api/v1/perms/users/assets/tree/"
+	if p.option.Search != "" {
+		apiPath += "?search=" + p.option.Search
+	}
+	resp, err := p.doRequest("GET", apiPath, nil, nil)
 	if err != nil {
 		return nil, err
 	}

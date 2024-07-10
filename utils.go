@@ -1,4 +1,4 @@
-package jmfzf
+package hostnav
 
 import "encoding/json"
 

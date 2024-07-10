@@ -1,12 +1,12 @@
 package plugins
 
 import (
-	"github.com/raojinlin/jmfzf"
-	"github.com/raojinlin/jmfzf/pkg/terminal"
+	"github.com/raojinlin/hostnav"
+	"github.com/raojinlin/hostnav/pkg/terminal"
 )
 
 type Ec2Plugin struct {
-	option *jmfzf.CloudProviderOption
+	option *hostnav.CloudProviderOption
 }
 
 func (p *Ec2Plugin) List(options *ListOptions) ([]terminal.Host, error) {

@@ -4,9 +4,9 @@ import (
 	"log"
 	"log/slog"
 
-	"github.com/raojinlin/jmfzf"
-	"github.com/raojinlin/jmfzf/pkg/terminal"
-	"github.com/raojinlin/jmfzf/plugins"
+	"github.com/raojinlin/hostnav"
+	"github.com/raojinlin/hostnav/pkg/terminal"
+	"github.com/raojinlin/hostnav/plugins"
 )
 
 var supportPlugins = map[string]plugins.Plugin{
@@ -22,7 +22,7 @@ type Manager struct {
 	plugins []plugins.Plugin
 }
 
-func New(pluginNames []string, config *jmfzf.Config) *Manager {
+func New(pluginNames []string, config *hostnav.Config) *Manager {
 	plugins := make([]plugins.Plugin, 0)
 	for _, pluginName := range pluginNames {
 		if plugin, ok := supportPlugins[pluginName]; ok {

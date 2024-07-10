@@ -6,21 +6,21 @@ import (
 
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
-	"github.com/raojinlin/jmfzf"
-	"github.com/raojinlin/jmfzf/pkg/terminal"
+	"github.com/raojinlin/hostnav"
+	"github.com/raojinlin/hostnav/pkg/terminal"
 )
 
 type DockerPlugin struct {
-	option *jmfzf.DockerOption
+	option *hostnav.DockerOption
 	cli    *client.Client
 }
 
 func NewDockerPlugin() *DockerPlugin {
-	return &DockerPlugin{option: &jmfzf.DockerOption{}}
+	return &DockerPlugin{option: &hostnav.DockerOption{}}
 }
 
 func (p *DockerPlugin) Init(option interface{}) error {
-	if err := jmfzf.MapToStruct(option, p.option); err != nil {
+	if err := hostnav.MapToStruct(option, p.option); err != nil {
 		return err
 	}
 

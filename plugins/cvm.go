@@ -3,24 +3,24 @@ package plugins
 import (
 	"fmt"
 
-	"github.com/raojinlin/jmfzf"
-	"github.com/raojinlin/jmfzf/pkg/terminal"
+	"github.com/raojinlin/hostnav"
+	"github.com/raojinlin/hostnav/pkg/terminal"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 	cvm "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cvm/v20170312"
 )
 
 type CVMPlugin struct {
-	option        *jmfzf.CloudProviderOption
+	option        *hostnav.CloudProviderOption
 	regionClients map[string]*cvm.Client
 }
 
 func NewCVMPlugin() *CVMPlugin {
-	return &CVMPlugin{option: &jmfzf.CloudProviderOption{}}
+	return &CVMPlugin{option: &hostnav.CloudProviderOption{}}
 }
 
 func (p *CVMPlugin) Init(option interface{}) error {
-	err := jmfzf.MapToStruct(option, p.option)
+	err := hostnav.MapToStruct(option, p.option)
 	if err != nil {
 		return err
 	}

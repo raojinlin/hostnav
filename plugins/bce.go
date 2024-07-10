@@ -5,8 +5,8 @@ import (
 
 	"github.com/baidubce/bce-sdk-go/services/bcc"
 	"github.com/baidubce/bce-sdk-go/services/bcc/api"
-	"github.com/raojinlin/jmfzf"
-	"github.com/raojinlin/jmfzf/pkg/terminal"
+	"github.com/raojinlin/hostnav"
+	"github.com/raojinlin/hostnav/pkg/terminal"
 )
 
 var bceRegionEndpoints = map[string]string{
@@ -21,16 +21,16 @@ var bceRegionEndpoints = map[string]string{
 }
 
 type BcePlugin struct {
-	option        *jmfzf.CloudProviderOption
+	option        *hostnav.CloudProviderOption
 	regionClients map[string]*bcc.Client
 }
 
 func NewBcePlugin() *BcePlugin {
-	return &BcePlugin{option: &jmfzf.CloudProviderOption{}}
+	return &BcePlugin{option: &hostnav.CloudProviderOption{}}
 }
 
 func (p *BcePlugin) Init(option interface{}) error {
-	if err := jmfzf.MapToStruct(option, p.option); err != nil {
+	if err := hostnav.MapToStruct(option, p.option); err != nil {
 		return err
 	}
 

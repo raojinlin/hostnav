@@ -1,6 +1,6 @@
 package plugins
 
-import "github.com/raojinlin/jmfzf/pkg/terminal"
+import "github.com/raojinlin/hostnav/pkg/terminal"
 
 // ListOptions represents a list of options for a plugin
 type ListOptions struct {

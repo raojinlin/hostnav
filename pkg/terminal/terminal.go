@@ -35,7 +35,7 @@ type SSHInfo struct {
 }
 
 func (s *SSHInfo) Connect() error {
-	opts := ""
+	opts := "-o StrictHostKeyChecking=no"
 	if s.IdentityFile != "" {
 		opts += " -i " + s.IdentityFile
 	}
@@ -98,10 +98,10 @@ type Pod struct {
 
 func (p *Pod) String() string {
 	if p.Namespace == NamespaceDocker {
-		return fmt.Sprintf("container: %s", p.Container.Name)
+		return fmt.Sprintf("Container: %s", p.Container.Name)
 	}
 
-	return fmt.Sprintf("pod: %s/%s", p.Namespace, p.Name)
+	return fmt.Sprintf("POD: %s/%s/%s", p.Namespace, p.Name, p.Container.Name)
 }
 
 func (p *Pod) Connect() error {
