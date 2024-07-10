@@ -59,7 +59,7 @@ func (c *FileCache[T]) Del(key string) {
 func (c *FileCache[T]) Save() error {
 	cacheDir, err := os.OpenFile(c.CacheDir, os.O_WRONLY, os.ModeDir)
 	if os.IsNotExist(err) {
-		if err = os.Mkdir(c.CacheDir, os.ModeDir); err != nil {
+		if err = os.MkdirAll(c.CacheDir, os.ModePerm); err != nil {
 			return err
 		}
 	}

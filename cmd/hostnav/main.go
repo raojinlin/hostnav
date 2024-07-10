@@ -84,7 +84,7 @@ func main() {
 	// Build fzf.Options
 	options, err := fzf.ParseOptions(
 		true, // whether to load defaults ($FZF_DEFAULT_OPTS_FILE and $FZF_DEFAULT_OPTS)
-		[]string{"--reverse", "--tmux"},
+		[]string{"--reverse"},
 	)
 	if err != nil {
 		exit(fzf.ExitError, err)
