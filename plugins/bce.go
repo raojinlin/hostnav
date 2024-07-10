@@ -21,27 +21,27 @@ var bceRegionEndpoints = map[string]string{
 }
 
 type BcePlugin struct {
-	option        *hostnav.CloudProviderOption
+	Option        *hostnav.CloudProviderOption
 	regionClients map[string]*bcc.Client
 }
 
 func NewBcePlugin() *BcePlugin {
-	return &BcePlugin{option: &hostnav.CloudProviderOption{}}
+	return &BcePlugin{Option: &hostnav.CloudProviderOption{}}
 }
 
 func (p *BcePlugin) Init(option interface{}) error {
-	if err := hostnav.MapToStruct(option, p.option); err != nil {
+	if err := hostnav.MapToStruct(option, p.Option); err != nil {
 		return err
 	}
 
 	regionClients := make(map[string]*bcc.Client)
-	for _, region := range p.option.Regions {
+	for _, region := range p.Option.Regions {
 		endpoint, ok := bceRegionEndpoints[region]
 		if !ok || endpoint == "" {
 			return fmt.Errorf("invalid region: %s", region)
 		}
 
-		bce, err := bcc.NewClient(p.option.AccessKey, p.option.AccessKeySecret, endpoint)
+		bce, err := bcc.NewClient(p.Option.AccessKey, p.Option.AccessKeySecret, endpoint)
 		if err != nil {
 			return fmt.Errorf("create bce %s client: %v", region, err)
 		}
@@ -76,7 +76,7 @@ func (p *BcePlugin) List(options *ListOptions) ([]terminal.Host, error) {
 					LocalIP:    instance.InternalIP,
 					User:       "root",
 					Port:       22,
-					UseLocalIP: p.option.ConnectionOptions.UseLocalIP,
+					UseLocalIP: p.Option.ConnectionOptions.UseLocalIP,
 				},
 			},
 		)

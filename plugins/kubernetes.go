@@ -12,20 +12,20 @@ import (
 )
 
 type KubernetesPlugin struct {
-	option *hostnav.KubernetesOption
+	Option *hostnav.KubernetesOption
 	client *kubernetes.Clientset
 }
 
 func NewKubernetesPlugin() *KubernetesPlugin {
-	return &KubernetesPlugin{option: &hostnav.KubernetesOption{}}
+	return &KubernetesPlugin{Option: &hostnav.KubernetesOption{}}
 }
 
 func (p *KubernetesPlugin) Init(option interface{}) error {
-	err := hostnav.MapToStruct(option, p.option)
+	err := hostnav.MapToStruct(option, p.Option)
 	if err != nil {
 		return err
 	}
-	k8sConfig, err := clientcmd.BuildConfigFromFlags("", p.option.KubeConfig)
+	k8sConfig, err := clientcmd.BuildConfigFromFlags("", p.Option.KubeConfig)
 	if err != nil {
 		return err
 	}
@@ -41,7 +41,7 @@ func (p *KubernetesPlugin) Init(option interface{}) error {
 
 func (p *KubernetesPlugin) List(options *ListOptions) ([]terminal.Host, error) {
 	var result []terminal.Host
-	for _, namespace := range p.option.Namespaces {
+	for _, namespace := range p.Option.Namespaces {
 		podList, err := p.client.CoreV1().Pods(namespace).List(context.Background(), metav1.ListOptions{})
 		if err != nil {
 			return nil, err
@@ -63,7 +63,7 @@ func (p *KubernetesPlugin) List(options *ListOptions) ([]terminal.Host, error) {
 						ContainerInfo: terminal.Pod{
 							Name:       pod.Name,
 							Namespace:  pod.Namespace,
-							KubeConfig: p.option.KubeConfig,
+							KubeConfig: p.Option.KubeConfig,
 							Container: terminal.Container{
 								Name:    container.Name,
 								Command: "/bin/sh",
