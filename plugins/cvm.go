@@ -11,24 +11,24 @@ import (
 )
 
 type CVMPlugin struct {
-	option        *hostnav.CloudProviderOption
+	Option        *hostnav.CloudProviderOption
 	regionClients map[string]*cvm.Client
 }
 
 func NewCVMPlugin() *CVMPlugin {
-	return &CVMPlugin{option: &hostnav.CloudProviderOption{}}
+	return &CVMPlugin{Option: &hostnav.CloudProviderOption{}}
 }
 
 func (p *CVMPlugin) Init(option interface{}) error {
-	err := hostnav.MapToStruct(option, p.option)
+	err := hostnav.MapToStruct(option, p.Option)
 	if err != nil {
 		return err
 	}
 
-	cert := common.NewCredential(p.option.AccessKey, p.option.AccessKeySecret)
+	cert := common.NewCredential(p.Option.AccessKey, p.Option.AccessKeySecret)
 	profile := profile.NewClientProfile()
 	regionClients := make(map[string]*cvm.Client)
-	for _, region := range p.option.Regions {
+	for _, region := range p.Option.Regions {
 		client, err := cvm.NewClient(cert, region, profile)
 		if err != nil {
 			return fmt.Errorf("failed to create %s client: %v", region, err)
@@ -91,7 +91,7 @@ func (p *CVMPlugin) List(options *ListOptions) ([]terminal.Host, error) {
 				Port:       22,
 				User:       "root",
 				LocalIP:    *instance.PrivateIpAddresses[0],
-				UseLocalIP: p.option.ConnectionOptions.UseLocalIP,
+				UseLocalIP: p.Option.ConnectionOptions.UseLocalIP,
 			},
 		})
 	}

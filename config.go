@@ -1,4 +1,4 @@
-package hostnav 
+package hostnav
 
 import (
 	"fmt"
@@ -45,6 +45,10 @@ type KubernetesOption struct {
 }
 
 type Config struct {
+	Cache struct {
+		Directory string `json:"directory" yaml:"directory"`
+		Duration  int    `json:"duration" yaml:"duration"`
+	} `json:"cache" yaml:"cache"`
 	DefaultPlugins []string               `json:"default_plugins" yaml:"default_plugins"`
 	Plugins        map[string]interface{} `json:"plugins" yaml:"plugins"`
 }

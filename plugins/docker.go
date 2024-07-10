@@ -11,26 +11,26 @@ import (
 )
 
 type DockerPlugin struct {
-	option *hostnav.DockerOption
+	Option *hostnav.DockerOption
 	cli    *client.Client
 }
 
 func NewDockerPlugin() *DockerPlugin {
-	return &DockerPlugin{option: &hostnav.DockerOption{}}
+	return &DockerPlugin{Option: &hostnav.DockerOption{}}
 }
 
 func (p *DockerPlugin) Init(option interface{}) error {
-	if err := hostnav.MapToStruct(option, p.option); err != nil {
+	if err := hostnav.MapToStruct(option, p.Option); err != nil {
 		return err
 	}
 
 
-	dockerVersion := p.option.Version
+	dockerVersion := p.Option.Version
 	if dockerVersion == "" {
 		dockerVersion = "1.43"
 	}
 
-	cli, err := client.NewClient(p.option.Host, p.option.Version, nil, nil)
+	cli, err := client.NewClient(p.Option.Host, p.Option.Version, nil, nil)
 	if err != nil {
 		return err
 	}

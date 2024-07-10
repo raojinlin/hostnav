@@ -6,7 +6,7 @@ import (
 )
 
 type Ec2Plugin struct {
-	option *hostnav.CloudProviderOption
+	Option *hostnav.CloudProviderOption
 }
 
 func (p *Ec2Plugin) List(options *ListOptions) ([]terminal.Host, error) {

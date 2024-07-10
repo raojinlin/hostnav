@@ -59,19 +59,18 @@ sudo apt-get install -y tmux
 以下是 `config.yaml` 配置文件的示例，并附上注释：
 
 ```yaml
+# 缓存配置
+cache: 
+  # 缓存保存路径
+  directory: ./cache
+  # 缓冲时间（分钟）
+  duration: 30
 # 默认使用的插件名称列表
 default_plugins:
 - docker
 - kubernetes
 - cvm
 - jumpserver
-
-# TMUX 配置
-tmux:
-  # 是否启用 TMUX
-  enabled: true
-  # TMUX 会话名称
-  session_name: "hostnav"
 
 # 插件配置
 plugins:
@@ -91,6 +90,116 @@ plugins:
     connections:
       # 是否使用本地 IP
       use_local_ip: true
+```
+
+## 插件
+
+下面是hostnav支持的插件。
+
+### BCE百度云服务器插件
+使用:
+```bash
+hostnav -plugins bce
+
+```
+
+配置:
+```yaml
+plugins:
+  bce:
+    # 访问密钥
+    access_key: "your-access-key"
+    # 密钥
+    access_key_secret: "your-secret-key"
+    # 区域列表
+    regions:
+      - cn-bj
+      - cn-bd
+      - cn-gz
+      - cn-su
+      - cn-hkg
+      - cn-fwh
+      - cn-cd
+      - cn-fsh
+    # 连接配置
+    connections:
+      # 是否使用本地 IP
+      use_local_ip: true 
+```
+
+### CVM腾讯云服务器插件
+使用
+```bash
+hostnav -plugins cvm
+```
+
+配置：
+
+```yaml
+plugins:
+  bce:
+    # 访问密钥
+    access_key: "your-access-key"
+    # 密钥
+    access_key_secret: "your-secret-key"
+    # 区域列表
+    regions:
+      - "ap-guangzhou"
+      - "ap-shanghai"
+    # 连接配置
+    connections:
+      # 是否使用本地 IP
+      use_local_ip: true 
+```
+
+### Docker容器插件
+使用：
+```bash
+hostnav -plugins docker
+```
+
+配置：
+```yaml
+plugins:
+  docker:
+    host: unix:///var/run/docker.sock
+    version: "1.43"
+```
+
+### Kubernetes容器插件
+使用:
+```bash
+hsotnav -plugins kubernetes
+```
+
+配置：
+```yaml
+plugins:
+  kubernetes:
+    # 要查询的namespace
+    namespaces:
+    - default
+    - kube_system
+    # kubeconfig路径
+    kubeconfig: ~/.kube/config
+```
+
+### JumpServer插件
+使用:
+```bash
+hostnav -plugins jumpserver
+```
+
+配置：
+```yaml
+plugins:
+  jumpserver:
+    # Jumpserver服务器地址
+    url: http://your-jumpserver-url
+    access_key: your api access key
+    access_key_secret: your api access key secret
+    # 资产过滤
+    search: xxxx
 ```
 
 ## 插件开发指南

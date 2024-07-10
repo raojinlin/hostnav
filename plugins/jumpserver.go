@@ -53,20 +53,20 @@ func (auth *SigAuth) Sign(r *http.Request) error {
 }
 
 type JumpServerPlugin struct {
-	option *hostnav.JumpServerOption
+	Option *hostnav.JumpServerOption
 }
 
 func NewJumpServerPlugin() *JumpServerPlugin {
-	return &JumpServerPlugin{option: &hostnav.JumpServerOption{}}
+	return &JumpServerPlugin{Option: &hostnav.JumpServerOption{}}
 }
 
 func (p *JumpServerPlugin) Init(option interface{}) error {
-	return hostnav.MapToStruct(option, p.option)
+	return hostnav.MapToStruct(option, p.Option)
 }
 
 func (p *JumpServerPlugin) doRequest(method string, path string, headers map[string]string, body io.Reader) (*http.Response, error) {
 	gmtFmt := "Mon, 02 Jan 2006 15:04:05 GMT"
-	req, err := http.NewRequest(method, p.option.Url+path, body)
+	req, err := http.NewRequest(method, p.Option.Url+path, body)
 	req.Header.Add("Date", time.Now().Format(gmtFmt))
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("X-JMS-ORG", "00000000-0000-0000-0000-000000000002")
@@ -79,7 +79,7 @@ func (p *JumpServerPlugin) doRequest(method string, path string, headers map[str
 		return nil, err
 	}
 
-	auth := SigAuth{KeyID: p.option.AccessKey, SecretID: p.option.AccessKeySecret}
+	auth := SigAuth{KeyID: p.Option.AccessKey, SecretID: p.Option.AccessKeySecret}
 	if err := auth.Sign(req); err != nil {
 		return nil, err
 	}
@@ -95,8 +95,8 @@ func (p *JumpServerPlugin) doRequest(method string, path string, headers map[str
 
 func (p *JumpServerPlugin) getUserPermsAssets() ([]Asset, error) {
 	apiPath := "/api/v1/perms/users/assets/tree/"
-	if p.option.Search != "" {
-		apiPath += "?search=" + p.option.Search
+	if p.Option.Search != "" {
+		apiPath += "?search=" + p.Option.Search
 	}
 	resp, err := p.doRequest("GET", apiPath, nil, nil)
 	if err != nil {
