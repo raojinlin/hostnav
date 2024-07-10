@@ -67,7 +67,7 @@ func main() {
 	}()
 
 	outputChan := make(chan string)
-	done := make(chan struct{}) // 用来通知任务完成
+	done := make(chan struct{})
 
 	go func() {
 		defer close(outputChan)
