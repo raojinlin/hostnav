@@ -4,6 +4,7 @@ Language： English | [中文](./README_CN.md)
 
 hostnav is a terminal tool integrated with tmux and fzf, designed to simplify the management and connection of server resources. Through its plugin system, hostnav supports managing resources from various cloud platforms, container platforms, and more, providing a fast and efficient terminal connection experience.
 
+<video src="./assets/demo.mp4"></video>
 
 ## Features
 

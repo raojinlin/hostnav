@@ -4,6 +4,8 @@
 
 hostnav 是一个集成了 tmux 和 fzf 的终端工具，旨在简化服务器资源的管理和连接。通过插件系统，hostnav 支持多种云平台、容器平台等资源的管理，提供快速、高效的终端连接体验。
 
+<video src="./assets/demo.mp4"></video>
+
 ## 功能特性
 
 - **多资源管理**：支持从云平台、容器平台等多种资源中查询和管理主机。
@@ -98,6 +100,28 @@ plugins:
 ## 插件
 
 下面是hostnav支持的插件。
+
+
+### 文件插件
+从文件加载自定义的服务器列表
+
+使用:
+```bash
+hostnav -plugins file
+```
+
+配置：
+
+```yaml
+- type: host
+  ssh_info:
+    name: my test server
+    public_ip: 192.168.5.43
+    local_ip: 192.168.5.43
+    user: root
+    port: 22
+    user_local_ip: true
+```
 
 ### BCC百度云服务器插件
 使用:

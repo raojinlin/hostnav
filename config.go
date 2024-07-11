@@ -34,6 +34,8 @@ type JumpServerOption struct {
 
 type SshConfig []string
 
+type FileOption []string
+
 type DockerOption struct {
 	Host    string `json:"host" yaml:"host"`
 	Version string `json:"version" yaml:"version"`
