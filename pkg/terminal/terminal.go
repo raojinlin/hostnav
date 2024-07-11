@@ -62,7 +62,11 @@ func (s *SSHInfo) Connect(option *ConnectionOption) error {
 	}
 
 	command := fmt.Sprintf("ssh %s %s@%s -p%d", opts, user, dest, port)
-	return tmux.NewWindow(s.Name, command)
+	if option.Tmux.NewWindow {
+		return tmux.NewWindow(s.Name, command)
+	}
+
+	return tmux.SplitWindow(command)
 }
 
 func (s *SSHInfo) String() string {
@@ -111,12 +115,21 @@ func (p *Pod) String() string {
 }
 
 func (p *Pod) Connect(option *ConnectionOption) error {
+	var command string
+	var windowName string
 	if p.Namespace == NamespaceDocker {
-		return tmux.NewWindow("Container: "+p.Container.Name, fmt.Sprintf("docker exec -it %s %s", p.Container.Name, p.Container.Command))
+		command = fmt.Sprintf("docker exec -it %s %s", p.Container.Name, p.Container.Command)
+		windowName = "Container: " + p.Container.Name
+	} else {
+		command = fmt.Sprintf("kubectl --kubeconfig %s exec -n %s -it %s -c %s -- %s", p.KubeConfig, p.Namespace, p.Name, p.Container.Name, p.Container.Command)
+		windowName = fmt.Sprintf("Pod: %s/%s", p.Name, p.Container.Name)
 	}
 
-	command := fmt.Sprintf("kubectl --kubeconfig %s exec -n %s -it %s -c %s -- %s", p.KubeConfig, p.Namespace, p.Name, p.Container.Name, p.Container.Command)
-	return tmux.NewWindow(fmt.Sprintf("Pod: %s/%s", p.Name, p.Container.Name), command)
+	if option.Tmux.NewWindow {
+		return tmux.NewWindow(windowName, command)
+	}
+
+	return tmux.SplitWindow(command)
 }
 
 type Container struct {

@@ -204,6 +204,37 @@ plugins:
     search: xxxx
 ```
 
+
+### 使用tmux
+要在 tmux 中绑定按键以打开 hostnav，你可以将以下配置添加到您的 ~/.tmux.conf 文件中：
+
+```bash
+# 绑定 Prefix-G 在新窗口中打开 hostnav
+tmux bind g split-window 'hostnav -new-window'
+
+# 绑定 Prefix-G 在当前窗口分隔出一个面板并打开 hostnav
+tmux bind g split-window 'hostnav'
+```
+
+关于分隔窗口并以不同方式打开 hostnav 的更具体示例：
+
+```bash
+# 绑定 Prefix-G 分隔出一个垂直面板并打开 hostnav
+tmux bind g split-window -v 'hostnav'
+
+# 绑定 Prefix-G 分隔出一个水平面板并打开 hostnav
+tmux bind g split-window -h 'hostnav'
+```
+
+这些命令绑定键 G（在按下 tmux 前缀键后，通常是 Ctrl-b），以创建一个新窗口或分隔当前窗口，并在新面板或窗口中执行 hostnav​ ([Koen Woortman](https://koenwoortman.com/tmux-remap-split-window-keys/))​​ ([Stack Overflow](https://stackoverflow.com/questions/38967247/tmux-how-do-i-bind-function-keys-to-commands))​。
+
+
+
+
+
+
+
+
 ## 插件开发指南
 
 ### 插件的作用

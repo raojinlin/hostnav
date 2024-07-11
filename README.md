@@ -22,6 +22,33 @@ Ensure that the Go environment is installed.
 go get -u github.com/raojinlin/hostnav
 ```
 
+## Using tmux
+To bind keys in tmux to open hostnav, you can add the following configurations to your ~/.tmux.conf file:
+
+```bash
+# Bind Prefix-G to open hostnav in a new window
+tmux bind g new-window 'hostnav'
+
+# Bind Prefix-G to split the current window and open hostnav in a new pane
+tmux bind g split-window 'hostnav'
+```
+
+For a more specific example related to splitting windows and opening hostnav in different ways:
+
+```bash
+# Bind Prefix-G to split the window and open hostnav in a new vertical pane
+tmux bind g split-window -v 'hostnav'
+
+# Bind Prefix-G to split the window and open hostnav in a new horizontal pane
+tmux bind g split-window -h 'hostnav'
+
+```
+
+These commands bind the key G (when pressed after the tmux prefix key, usually Ctrl-b) to either create a new window or split the current window, and then execute hostnav in the new pane or window​ ([Koen Woortman](https://koenwoortman.com/tmux-remap-split-window-keys/))​​ ([Stack Overflow](https://stackoverflow.com/questions/38967247/tmux-how-do-i-bind-function-keys-to-commands))​.
+
+
+
+
 ## Prerequisites
 
 Before running hostnav, make sure the following commands are properly installed:
