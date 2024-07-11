@@ -26,10 +26,12 @@ func exit(code int, err error) {
 func main() {
 	homedir, _ := os.UserHomeDir()
 	var configfile string = path.Join(homedir, ".hostnav.yaml")
+	var newWindow bool
 	// plugins to use, mutiple plugins coma separated
 	var plugins string
 	flag.StringVar(&configfile, "config", configfile, "path to configuration file")
 	flag.StringVar(&plugins, "plugins", plugins, "plugin to use, mutiple plugins comma separated")
+	flag.BoolVar(&newWindow, "new-window", newWindow, "new window for tmux")
 
 	flag.Parse()
 	cfg, err := hostnav.NewConfig(configfile)
@@ -74,7 +76,7 @@ func main() {
 		output := <-outputChan
 		host := indexedHosts[output]
 		slog.Info("connect to", "host", host.String())
-		err := host.Connect()
+		err := host.Connect(&terminal.ConnectionOption{Tmux: struct{ NewWindow bool }{NewWindow: newWindow}})
 		if err != nil {
 			slog.Error("Error connecting to host", "error", err)
 		}
