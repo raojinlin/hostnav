@@ -2,7 +2,7 @@ package hostnav
 
 import "encoding/json"
 
-func MapToStruct[T CloudProviderOption | JumpServerOption | SshConfig | DockerOption | KubernetesOption](m interface{}, v *T) error {
+func MapToStruct[T CloudProviderOption | JumpServerOption | SshConfig | DockerOption | KubernetesOption | FileOption](m interface{}, v *T) error {
 	data, err := json.Marshal(m)
 	if err != nil {
 		return err

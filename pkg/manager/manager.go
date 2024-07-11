@@ -21,6 +21,7 @@ var supportPlugins = map[string]plugins.Plugin{
 	"docker":     plugins.NewDockerPlugin(),
 	"jumpserver": plugins.NewJumpServerPlugin(),
 	"kubernetes": plugins.NewKubernetesPlugin(),
+	"file":       plugins.NewFilePlugin(),
 }
 
 type Manager struct {
