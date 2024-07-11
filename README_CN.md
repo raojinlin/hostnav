@@ -4,7 +4,10 @@
 
 hostnav 是一个集成了 tmux 和 fzf 的终端工具，旨在简化服务器资源的管理和连接。通过插件系统，hostnav 支持多种云平台、容器平台等资源的管理，提供快速、高效的终端连接体验。
 
-<video src="./assets/demo.mp4"></video>
+
+
+https://github.com/raojinlin/hostnav/assets/19492031/707557d9-8032-40a6-9fff-6ea3b8d0b800
+
 
 ## 功能特性
 
