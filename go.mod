@@ -5,6 +5,7 @@ go 1.22.0
 toolchain go1.22.5
 
 require (
+	github.com/aws/aws-sdk-go v1.54.18
 	github.com/baidubce/bce-sdk-go v0.9.184
 	github.com/docker/docker v27.0.3+incompatible
 	github.com/junegunn/fzf v0.0.0-20240702002010-cfc149e99448
@@ -42,6 +43,7 @@ require (
 	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/imdario/mergo v0.3.6 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
