@@ -77,17 +77,17 @@ plugins:
 
 Below are the plugins supported by hostnav.
 
-### BCE Baidu Cloud Server Plugin
+### BCC Baidu Cloud Server Plugin
 
 ```bash
-hostnav -plugins bce
+hostnav -plugins bcC
 ```
 
 Configuration:
 
 ```yaml
 plugins:
-  bce:
+  bcc:
     # Access key
     access_key: "your-access-key"
     # Secret key
@@ -118,7 +118,7 @@ Configuration:
 
 ```yaml
 plugins:
-  bce:
+  cvm:
     # Access key
     access_key: "your-access-key"
     # Secret key
@@ -221,7 +221,7 @@ Plugins are the core of hostnav. Through the plugin system, users can extend the
     ```
 3. Implement Plugin Logic
 
-    ```
+    ```go
     package my_plugin
 
     import (
@@ -276,7 +276,7 @@ Plugins are the core of hostnav. Through the plugin system, users can extend the
 
     Add the custom plugin configuration in the hostnav configuration file.
 
-    ```
+    ```yaml
     plugins:
         my_plugin:
             endpoint: "https://api.example.com"

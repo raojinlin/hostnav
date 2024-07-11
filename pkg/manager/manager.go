@@ -17,9 +17,9 @@ import (
 var supportPlugins = map[string]plugins.Plugin{
 	"ec2":        plugins.NewEc2Plugin(),
 	"cvm":        plugins.NewCVMPlugin(),
-	"jumpserver": plugins.NewJumpServerPlugin(),
-	"bce":        plugins.NewBcePlugin(),
+	"bcc":        plugins.NewBccPlugin(),
 	"docker":     plugins.NewDockerPlugin(),
+	"jumpserver": plugins.NewJumpServerPlugin(),
 	"kubernetes": plugins.NewKubernetesPlugin(),
 }
 

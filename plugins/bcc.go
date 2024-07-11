@@ -9,7 +9,7 @@ import (
 	"github.com/raojinlin/hostnav/pkg/terminal"
 )
 
-var bceRegionEndpoints = map[string]string{
+var bccRegionEndpoints = map[string]string{
 	"cn-bj":  "bcc.bj.baidubce.com",
 	"cn-bd":  "bcc.bd.baidubce.com",
 	"cn-gz":  "bcc.gz.baidubce.com",
@@ -20,45 +20,45 @@ var bceRegionEndpoints = map[string]string{
 	"cn-fsh": "bcc.fsh.baidubce.com",
 }
 
-type BcePlugin struct {
+type BccPlugin struct {
 	Option        *hostnav.CloudProviderOption
 	regionClients map[string]*bcc.Client
 }
 
-func NewBcePlugin() *BcePlugin {
-	return &BcePlugin{Option: &hostnav.CloudProviderOption{}}
+func NewBccPlugin() *BccPlugin {
+	return &BccPlugin{Option: &hostnav.CloudProviderOption{}}
 }
 
-func (p *BcePlugin) Init(option interface{}) error {
+func (p *BccPlugin) Init(option interface{}) error {
 	if err := hostnav.MapToStruct(option, p.Option); err != nil {
 		return err
 	}
 
 	regionClients := make(map[string]*bcc.Client)
 	for _, region := range p.Option.Regions {
-		endpoint, ok := bceRegionEndpoints[region]
+		endpoint, ok := bccRegionEndpoints[region]
 		if !ok || endpoint == "" {
 			return fmt.Errorf("invalid region: %s", region)
 		}
 
-		bce, err := bcc.NewClient(p.Option.AccessKey, p.Option.AccessKeySecret, endpoint)
+		bcc, err := bcc.NewClient(p.Option.AccessKey, p.Option.AccessKeySecret, endpoint)
 		if err != nil {
-			return fmt.Errorf("create bce %s client: %v", region, err)
+			return fmt.Errorf("create bcc %s client: %v", region, err)
 		}
 
-		regionClients[region] = bce
+		regionClients[region] = bcc
 	}
 
 	p.regionClients = regionClients
 	return nil
 }
 
-func (p *BcePlugin) List(options *ListOptions) ([]terminal.Host, error) {
+func (p *BccPlugin) List(options *ListOptions) ([]terminal.Host, error) {
 	var instances []api.InstanceModel
 	for _, client := range p.regionClients {
 		resp, err := client.ListInstances(&api.ListInstanceArgs{})
 		if err != nil {
-			return nil, fmt.Errorf("list bce instances: %v", err)
+			return nil, fmt.Errorf("list bcc instances: %v", err)
 		}
 
 		instances = append(instances, resp.Instances...)
@@ -85,10 +85,10 @@ func (p *BcePlugin) List(options *ListOptions) ([]terminal.Host, error) {
 	return result, nil
 }
 
-func (p *BcePlugin) Name() string {
-	return "bce"
+func (p *BccPlugin) Name() string {
+	return "bcc"
 }
 
-func (p *BcePlugin) Cache() bool {
+func (p *BccPlugin) Cache() bool {
 	return true
 }

@@ -8,9 +8,15 @@ const (
 	NamespaceDocker = "__docker__"
 )
 
+type ConnectionOption struct {
+	Tmux struct {
+		NewWindow bool
+	} `json:"tmux"`
+}
+
 // Terminal represents a terminal that can be used to interact
 type Terminal interface {
-	Connect() error
+	Connect(option *ConnectionOption) error
 }
 
 type TerminalType = string
@@ -34,7 +40,7 @@ type SSHInfo struct {
 	UseLocalIP   bool   `json:"use_local_ip" yaml:"use_local_ip"`
 }
 
-func (s *SSHInfo) Connect() error {
+func (s *SSHInfo) Connect(option *ConnectionOption) error {
 	opts := "-o StrictHostKeyChecking=no"
 	if s.IdentityFile != "" {
 		opts += " -i " + s.IdentityFile
@@ -77,13 +83,13 @@ func (h *Host) String() string {
 	return h.SSHInfo.String()
 }
 
-func (h *Host) Connect() error {
+func (h *Host) Connect(option *ConnectionOption) error {
 	if h.Type == TerminalTypeHost {
-		return h.SSHInfo.Connect()
+		return h.SSHInfo.Connect(option)
 	}
 
 	if h.Type == TerminalTypeContainer {
-		return h.ContainerInfo.Connect()
+		return h.ContainerInfo.Connect(option)
 	}
 
 	return fmt.Errorf("unkown terminal type: %s", h.Type)
@@ -104,7 +110,7 @@ func (p *Pod) String() string {
 	return fmt.Sprintf("POD: %s/%s/%s", p.Namespace, p.Name, p.Container.Name)
 }
 
-func (p *Pod) Connect() error {
+func (p *Pod) Connect(option *ConnectionOption) error {
 	if p.Namespace == NamespaceDocker {
 		return tmux.NewWindow("Container: "+p.Container.Name, fmt.Sprintf("docker exec -it %s %s", p.Container.Name, p.Container.Command))
 	}
