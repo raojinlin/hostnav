@@ -2,6 +2,7 @@ package plugins
 
 import (
 	"fmt"
+	"log/slog"
 
 	"github.com/raojinlin/hostnav"
 	"github.com/raojinlin/hostnav/pkg/terminal"
@@ -83,15 +84,24 @@ func (p *CVMPlugin) List(options *ListOptions) ([]terminal.Host, error) {
 
 	var result []terminal.Host
 	for _, instance := range instances {
+		useLocalIP := p.Option.ConnectionOptions.UseLocalIP
+		publicIp := ""
+		if len(instance.PublicIpAddresses) > 0 {
+			publicIp = *instance.PublicIpAddresses[0]
+		} else {
+			slog.Warn("instance", *instance.InstanceName, "has no public IP address, falling back to private IP")
+			useLocalIP = true
+		}
+
 		result = append(result, terminal.Host{
 			Type: terminal.TerminalTypeHost,
 			SSHInfo: terminal.SSHInfo{
 				Name:       fmt.Sprintf("%s(%s): %s", p.Name(), *instance.Placement.Zone, *instance.InstanceName),
-				PublicIP:   *instance.PublicIpAddresses[0],
+				PublicIP:   publicIp,
 				Port:       22,
 				User:       "root",
 				LocalIP:    *instance.PrivateIpAddresses[0],
-				UseLocalIP: p.Option.ConnectionOptions.UseLocalIP,
+				UseLocalIP: useLocalIP,
 			},
 		})
 	}
