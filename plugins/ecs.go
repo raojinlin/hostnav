@@ -87,7 +87,7 @@ func (p *EcsPlugin) Cache() bool {
 	return true
 }
 
-func (p *EcsPlugin) list(client *ecs20140526.Client) ([]terminal.Host, error) {
+func (p *EcsPlugin) list(client *ecs20140526.Client, region string) ([]terminal.Host, error) {
 	var result []terminal.Host
 	var page int32 = 1
 	var pageSize int32 = 100
@@ -99,6 +99,7 @@ func (p *EcsPlugin) list(client *ecs20140526.Client) ([]terminal.Host, error) {
 			PageNumber: tea.Int32(page),
 			PageSize:   tea.Int32(pageSize),
 			NextToken:  &nextToken,
+			RegionId:   tea.String(region),
 		})
 
 		if err != nil {
@@ -122,12 +123,14 @@ func (p *EcsPlugin) list(client *ecs20140526.Client) ([]terminal.Host, error) {
 		}
 	}
 
+	return result, nil
+
 }
 
 func (p *EcsPlugin) List(options *ListOptions) ([]terminal.Host, error) {
 	var result []terminal.Host
-	for _, client := range p.regionsClient {
-		regionInstances, err := p.list(client)
+	for region, client := range p.regionsClient {
+		regionInstances, err := p.list(client, region)
 		if err != nil {
 			return nil, err
 		}
