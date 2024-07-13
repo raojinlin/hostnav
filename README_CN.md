@@ -104,6 +104,24 @@ plugins:
 
 下面是hostnav支持的插件。
 
+### 阿里云ECS插件
+使用：
+```bash
+hostnav -plugins ecs
+```
+
+配置：
+```yaml
+plugins:
+  ecs:
+    access_key: xxxx
+    access_key_secret: xxxx
+    regions:
+    - cn-qingdao
+    - cn-beijing
+    - cn-zhangjiakou
+    - cn-hongkong
+```
 
 ### 文件插件
 从文件加载自定义的服务器列表
