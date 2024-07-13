@@ -22,6 +22,7 @@ var supportPlugins = map[string]plugins.Plugin{
 	"jumpserver": plugins.NewJumpServerPlugin(),
 	"kubernetes": plugins.NewKubernetesPlugin(),
 	"file":       plugins.NewFilePlugin(),
+	"ecs":        plugins.NewEcsPlugin(),
 }
 
 type Manager struct {

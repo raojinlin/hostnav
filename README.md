@@ -105,6 +105,24 @@ plugins:
 
 Below are the plugins supported by hostnav.
 
+### ECS Alibaba Cloud plugin
+```bash
+hostnav -plugins ecs
+```
+
+Configuration：
+```yaml
+plugins:
+  ecs:
+    access_key: xxxx
+    access_key_secret: xxxx
+    regions:
+    - cn-qingdao
+    - cn-beijing
+    - cn-zhangjiakou
+    - cn-hongkong
+```
+
 ### BCC Baidu Cloud Server Plugin
 
 ```bash
