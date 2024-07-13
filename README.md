@@ -35,16 +35,16 @@ Use the following command to download.
 
 ```bash
 # Linux amd64
-curl -O https://github.com/raojinlin/hostnav/releases/download/latest/hostnav-linux-amd64
+curl -O https://github.com/raojinlin/hostnav/releases/latest/download/hostnav-linux-amd64
 
 # MacOS amd64
-curl -O https://github.com/raojinlin/hostnav/releases/download/latest/hostnav-darwin-amd64
+curl -O https://github.com/raojinlin/hostnav/releases/latest/download/hostnav-darwin-amd64
 ```
 
 ### windows install
 Download the latest version of hostnav.exe
 
-[hostnav.exe](https://github.com/raojinlin/hostnav/releases/download/latest/hostnav.exe)
+[hostnav.exe](https://github.com/raojinlin/hostnav/releases//latest/download/hostnav.exe)
 
 
 ## Using tmux

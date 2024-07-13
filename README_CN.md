@@ -36,14 +36,14 @@ hostnav
 ### 二进制文件下载
 ```bash
 # Linux amd64
-curl -O https://github.com/raojinlin/hostnav/releases/download/latest/hostnav-linux-amd64
+curl -O https://github.com/raojinlin/hostnav/releases/latest/download/hostnav-linux-amd64
 
 # MacOS amd64
-curl -O https://github.com/raojinlin/hostnav/releases/download/latest/hostnav-darwin-amd64
+curl -O https://github.com/raojinlin/hostnav/releases/latest/download/hostnav-darwin-amd64
 ```
 
 ### Windows下载
-点击 [hostnav.exe](https://github.com/raojinlin/hostnav/releases/download/latest/hostnav.exe) 下载
+点击 [hostnav.exe](https://github.com/raojinlin/hostnav/releases/latest/download/hostnav.exe) 下载
 
 
 ## 使用前提
