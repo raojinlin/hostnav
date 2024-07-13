@@ -24,8 +24,27 @@ https://github.com/raojinlin/hostnav/assets/19492031/707557d9-8032-40a6-9fff-6ea
 确保已安装 Go 环境。
 
 ```bash
-go get -u github.com/raojinlin/hostnav
+git clone github.com/raojinlin/hostnav
+cd hostnav
+go mod tidy
+go install ./cmd/hostnav
+
+hostnav
 ```
+
+
+### 二进制文件下载
+```bash
+# Linux amd64
+curl -O https://github.com/raojinlin/hostnav/releases/download/latest/hostnav-linux-amd64
+
+# MacOS amd64
+curl -O https://github.com/raojinlin/hostnav/releases/download/latest/hostnav-darwin-amd64
+```
+
+### Windows下载
+点击 [hostnav.exe](https://github.com/raojinlin/hostnav/releases/download/latest/hostnav.exe) 下载
+
 
 ## 使用前提
 在运行 hostnav 之前，请确保以下命令已正确安装：

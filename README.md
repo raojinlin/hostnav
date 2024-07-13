@@ -17,11 +17,35 @@ https://github.com/raojinlin/hostnav/assets/19492031/707557d9-8032-40a6-9fff-6ea
 
 ## Installation
 
+
+### Install from Source
 Ensure that the Go environment is installed.
 
 ```bash
-go get -u github.com/raojinlin/hostnav
+git clone github.com/raojinlin/hostnav
+cd hostnav
+go mod tidy
+go install ./cmd/hostnav
+
+hostnav
 ```
+
+### Binary Download
+Use the following command to download.
+
+```bash
+# Linux amd64
+curl -O https://github.com/raojinlin/hostnav/releases/download/latest/hostnav-linux-amd64
+
+# MacOS amd64
+curl -O https://github.com/raojinlin/hostnav/releases/download/latest/hostnav-darwin-amd64
+```
+
+### windows install
+Download the latest version of hostnav.exe
+
+[hostnav.exe](https://github.com/raojinlin/hostnav/releases/download/latest/hostnav.exe)
+
 
 ## Using tmux
 To bind keys in tmux to open hostnav, you can add the following configurations to your ~/.tmux.conf file:
