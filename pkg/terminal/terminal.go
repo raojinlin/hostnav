@@ -2,6 +2,7 @@ package terminal
 
 import (
 	"fmt"
+	"log/slog"
 )
 
 const (
@@ -103,6 +104,7 @@ type Pod struct {
 	Name       string    `json:"name" yaml:"name"`
 	KubeConfig string    `json:"kube_config" yaml:"kube_config"`
 	Namespace  string    `json:"namespace" yaml:"namespace"`
+	Kubectl    string    `json:"kubectl" yaml:"kubectl"`
 	Container  Container `json:"container" yaml:"container"`
 }
 
@@ -121,10 +123,15 @@ func (p *Pod) Connect(option *ConnectionOption) error {
 		command = fmt.Sprintf("docker exec -it %s %s", p.Container.Name, p.Container.Command)
 		windowName = "Container: " + p.Container.Name
 	} else {
-		command = fmt.Sprintf("kubectl --kubeconfig %s exec -n %s -it %s -c %s -- %s", p.KubeConfig, p.Namespace, p.Name, p.Container.Name, p.Container.Command)
+		kubectl := "kubectl"
+		if p.Kubectl != "" {
+			kubectl = p.Kubectl
+		}
+		command = fmt.Sprintf(kubectl+" --kubeconfig %s exec -n %s -it %s -c %s -- %s", p.KubeConfig, p.Namespace, p.Name, p.Container.Name, p.Container.Command)
 		windowName = fmt.Sprintf("Pod: %s/%s", p.Name, p.Container.Name)
 	}
 
+	slog.Info(command)
 	if option.Tmux.NewWindow {
 		return tmux.NewWindow(windowName, command)
 	}
