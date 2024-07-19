@@ -248,6 +248,8 @@ plugins:
     - kube_system
     # kubeconfig路径
     kubeconfig: ~/.kube/config
+    # kubectl命令的路径
+    kubectl: /snap/bin/microk8s.kubectl
 ```
 
 ### JumpServer插件

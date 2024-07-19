@@ -229,6 +229,8 @@ Configuration:
 ```yaml
 plugins:
   kubernetes:
+    # Path command kubectl
+    kubectl: /snap/bin/microk8s.kubectl
     # Namespaces to query
     namespaces:
     - default

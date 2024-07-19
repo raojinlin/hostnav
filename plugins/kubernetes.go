@@ -64,6 +64,7 @@ func (p *KubernetesPlugin) List(options *ListOptions) ([]terminal.Host, error) {
 							Name:       pod.Name,
 							Namespace:  pod.Namespace,
 							KubeConfig: p.Option.KubeConfig,
+							Kubectl:    p.Option.Kubectl,
 							Container: terminal.Container{
 								Name:    container.Name,
 								Command: "/bin/sh",
