@@ -1,25 +1,27 @@
 # hostnav
 
-Language： English | [中文](./README_CN.md)
+语言：中文 | [English](./README_en.md)
 
-hostnav is a terminal tool integrated with tmux and fzf, designed to simplify the management and connection of server resources. Through its plugin system, hostnav supports managing resources from various cloud platforms, container platforms, and more, providing a fast and efficient terminal connection experience.
+hostnav 是一个集成了 tmux 和 fzf 的终端工具，旨在简化服务器资源的管理和连接。通过插件系统，hostnav 支持多种云平台、容器平台等资源的管理，提供快速、高效的终端连接体验。
+
+
 
 https://github.com/raojinlin/hostnav/assets/19492031/707557d9-8032-40a6-9fff-6ea3b8d0b800
 
-## Features
 
-- **Multi-resource Management**: Supports querying and managing hosts from multiple resources such as cloud platforms and container platforms.
-- **Terminal Connection**: Quickly connect to resources using SSH, docker exec, kubectl exec, etc.
-- **Plugin System**: Extend support for more resource types and platforms through plugins.
-- **tmux Integration**: Manage multiple windows and panels in the terminal using tmux.
-- **fzf Integration**: Quickly search and filter resources using fzf.
-- **High Configurability**: Supports various configuration options to meet different usage needs.
+## 功能特性
 
-## Installation
+- **多资源管理**：支持从云平台、容器平台等多种资源中查询和管理主机。
+- **终端连接**：使用 SSH、docker exec、kubectl exec 等方式快速连接到资源。
+- **插件系统**：通过插件扩展支持更多的资源类型和平台。
+- **tmux 集成**：使用 tmux 实现多窗口、多面板的终端管理。
+- **fzf 集成**：通过 fzf 实现快速搜索和筛选资源。
+- **高可配置性**：支持多种配置选项，满足不同的使用需求。
+- **多平台支持**: 支持Widnows、Linux、MacOS
 
+## 安装
 
-### Install from Source
-Ensure that the Go environment is installed.
+确保已安装 Go 环境。
 
 ```bash
 git clone github.com/raojinlin/hostnav
@@ -30,9 +32,8 @@ go install ./cmd/hostnav
 hostnav
 ```
 
-### Binary Download
-Use the following command to download.
 
+### 二进制文件下载
 ```bash
 # Linux amd64
 curl -O https://github.com/raojinlin/hostnav/releases/latest/download/hostnav-linux-amd64
@@ -41,100 +42,94 @@ curl -O https://github.com/raojinlin/hostnav/releases/latest/download/hostnav-li
 curl -O https://github.com/raojinlin/hostnav/releases/latest/download/hostnav-darwin-amd64
 ```
 
-### windows install
-Download the latest version of hostnav.exe
-
-[hostnav.exe](https://github.com/raojinlin/hostnav/releases//latest/download/hostnav.exe)
+### Windows下载
+点击 [hostnav.exe](https://github.com/raojinlin/hostnav/releases/latest/download/hostnav.exe) 下载
 
 
-## Using tmux
-To bind keys in tmux to open hostnav, you can add the following configurations to your ~/.tmux.conf file:
+## 使用前提
+在运行 hostnav 之前，请确保以下命令已正确安装：
 
+- Kubectl：用于管理 Kubernetes 集群。
+- Docker：用于管理和运行容器。
+- SSH：用于远程连接服务器。
+- tmux：用于实现多面板功能（如果需要使用 tmux 的多面板功能）。
+
+可以使用以下命令来安装这些工具：
+
+### 安装 Kubectl
 ```bash
-# Bind Prefix-G to open hostnav in a new window
-tmux bind g new-window 'hostnav'
-
-# Bind Prefix-G to split the current window and open hostnav in a new pane
-tmux bind g split-window 'hostnav'
+# 使用包管理器安装，例如 Ubuntu 下使用 apt
+sudo apt-get install -y kubectl
 ```
 
-For a more specific example related to splitting windows and opening hostnav in different ways:
-
+### 安装docker
 ```bash
-# Bind Prefix-G to split the window and open hostnav in a new vertical pane
-tmux bind g split-window -v 'hostnav'
-
-# Bind Prefix-G to split the window and open hostnav in a new horizontal pane
-tmux bind g split-window -h 'hostnav'
-
+# 使用官方安装脚本
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
 ```
 
-These commands bind the key G (when pressed after the tmux prefix key, usually Ctrl-b) to either create a new window or split the current window, and then execute hostnav in the new pane or window​ ([Koen Woortman](https://koenwoortman.com/tmux-remap-split-window-keys/))​​ ([Stack Overflow](https://stackoverflow.com/questions/38967247/tmux-how-do-i-bind-function-keys-to-commands))​.
+### 安装 SSH
+```bash
+# 大多数系统预装了 SSH 客户端，如果没有，可以使用包管理器安装
+sudo apt-get install -y openssh-client
+```
 
+### 安装 tmux
+```bash
+# 使用包管理器安装，例如 Ubuntu 下使用 apt
+sudo apt-get install -y tmux
+```
 
+## 配置文件示例
 
-
-## Prerequisites
-
-Before running hostnav, make sure the following commands are properly installed:
-
-- Kubectl: For managing Kubernetes clusters.
-- Docker: For managing and running containers.
-- SSH: For remote server connections.
-- tmux: For multi-panel functionality (if using tmux's multi-panel feature).
-
-
-## Configuration File Example
-
-Below is an example of the config.yaml configuration file with comments:
+以下是 `config.yaml` 配置文件的示例，并附上注释：
 
 ```yaml
-# Cache configuration
+# 缓存配置
 cache: 
-  # Cache save path
+  # 缓存保存路径
   directory: ./cache
-  # Cache duration (minutes)
+  # 缓冲时间（分钟）
   duration: 30
-
-# List of default plugins to use
+# 默认使用的插件名称列表
 default_plugins:
 - docker
 - kubernetes
 - cvm
 - jumpserver
 
-# Plugin configurations
+# 插件配置
 plugins:
-  # Plugin name
+  # 插件名称
   example:
-    # Endpoint address
+    # 端点地址
     endpoint: "https://api.example.com"
-    # Access key
+    # 访问密钥
     access_key: "your-access-key"
-    # Secret key
+    # 密钥
     access_key_secret: "your-secret-key"
-    # Region list
+    # 区域列表
     regions:
       - "us-west-1"
       - "us-east-1"
-    # Connection configuration
+    # 连接配置
     connections:
-      # Use local IP
+      # 是否使用本地 IP
       use_local_ip: true
-
 ```
 
+## 插件
 
-## Plugins
+下面是hostnav支持的插件。
 
-Below are the plugins supported by hostnav.
-
-### ECS Alibaba Cloud plugin
+### 阿里云ECS插件
+使用：
 ```bash
 hostnav -plugins ecs
 ```
 
-Configuration：
+配置：
 ```yaml
 plugins:
   ecs:
@@ -147,22 +142,42 @@ plugins:
     - cn-hongkong
 ```
 
-### BCC Baidu Cloud Server Plugin
+### 文件插件
+从文件加载自定义的服务器列表
 
+使用:
 ```bash
-hostnav -plugins bcC
+hostnav -plugins file
 ```
 
-Configuration:
+配置：
 
+```yaml
+- type: host
+  ssh_info:
+    name: my test server
+    public_ip: 192.168.5.43
+    local_ip: 192.168.5.43
+    user: root
+    port: 22
+    user_local_ip: true
+```
+
+### BCC百度云服务器插件
+使用:
+```bash
+hostnav -plugins bcc
+```
+
+配置:
 ```yaml
 plugins:
   bcc:
-    # Access key
+    # 访问密钥
     access_key: "your-access-key"
-    # Secret key
+    # 密钥
     access_key_secret: "your-secret-key"
-    # Region list
+    # 区域列表
     regions:
       - cn-bj
       - cn-bd
@@ -172,208 +187,234 @@ plugins:
       - cn-fwh
       - cn-cd
       - cn-fsh
-    # Connection configuration
+    # 连接配置
     connections:
-      # Use local IP
+      # 是否使用本地 IP
       use_local_ip: true 
 ```
 
-### CVM Tencent Cloud Server Plugin
-
+### CVM腾讯云服务器插件
+使用
 ```bash
 hostnav -plugins cvm
 ```
 
-Configuration:
+配置：
 
 ```yaml
 plugins:
   cvm:
-    # Access key
+    # 访问密钥
     access_key: "your-access-key"
-    # Secret key
+    # 密钥
     access_key_secret: "your-secret-key"
-    # Region list
+    # 区域列表
     regions:
       - "ap-guangzhou"
       - "ap-shanghai"
-    # Connection configuration
+    # 连接配置
     connections:
-      # Use local IP
+      # 是否使用本地 IP
       use_local_ip: true 
-
 ```
 
-### Docker Container Plugin
-
+### Docker容器插件
+使用：
 ```bash
 hostnav -plugins docker
 ```
 
-Configuration:
+配置：
 ```yaml
 plugins:
   docker:
     host: unix:///var/run/docker.sock
     version: "1.43"
-
 ```
 
-### Kubernetes Container Plugin
-
+### Kubernetes容器插件
+使用:
 ```bash
-hostnav -plugins kubernetes
+hsotnav -plugins kubernetes
 ```
 
-Configuration:
+配置：
 ```yaml
 plugins:
   kubernetes:
-    # Path command kubectl
-    kubectl: /snap/bin/microk8s.kubectl
-    # Namespaces to query
+    # 要查询的namespace
     namespaces:
     - default
     - kube_system
-    # Kubeconfig path
+    # kubeconfig路径
     kubeconfig: ~/.kube/config
-
+    # kubectl命令的路径
+    kubectl: /snap/bin/microk8s.kubectl
 ```
 
-### JumpServer Plugin
-
+### JumpServer插件
+使用:
 ```bash
 hostnav -plugins jumpserver
 ```
 
-
-Configuration:
+配置：
 ```yaml
 plugins:
   jumpserver:
-    # JumpServer address
+    # Jumpserver服务器地址
     url: http://your-jumpserver-url
-    access_key: your-api-access-key
-    access_key_secret: your-api-access-key-secret
-    # Asset filter
+    access_key: your api access key
+    access_key_secret: your api access key secret
+    # 资产过滤
     search: xxxx
 ```
 
-## Plugin Development Guide
-### Role of Plugins
-Plugins are the core of hostnav. Through the plugin system, users can extend the functionality of hostnav to support more cloud platforms, container platforms, and other resources. The main roles of plugins include:
 
-- Resource Query: Retrieve resource information from different platforms.
-- Terminal Connection: Provide functionality to connect to resources.
-- Plugin Development: Users can develop custom plugins to extend the functionality of hostnav.
-
-
-### Plugin Development Process
-
-1. Create Plugin Directory
-
-    Create a new plugin directory in the custom plugins directory, e.g., my_plugin.
-
-2. Implement Plugin Interface
-
-    Create a new Go file in the plugin directory, e.g., my_plugin.go, and implement the plugin interface.
-
-    ```go
-    type ListOptions struct {
-        Order   int    `json:"order" yaml:"order"`
-        OrderBy string `json:"order_by" yaml:"order_by"`
-    }
-
-    type Plugin interface {
-        List(option *ListOptions) ([]terminal.Host, error)
-        Name() string
-        Cache() bool
-        Init(option interface{}) error
-    }
-    ```
-3. Implement Plugin Logic
-
-    ```go
-    package my_plugin
-
-    import (
-        "github.com/raojinlin/hostnav"
-        "github.com/raojinlin/hostnav/pkg/terminal"
-    )
-
-    type MyPlugin struct {
-        option *hostnav.CloudProviderOption
-    }
-
-    func NewMyPlugin() *MyPlugin {
-        return &MyPlugin{option: &hostnav.CloudProviderOption{}}
-    }
-
-    func (p *MyPlugin) Init(option interface{}) error {
-        err := hostnav.MapToStruct(option, p.option)
-        if err != nil {
-            return err
-        }
-        // Initialize cloud platform client
-        return nil
-    }
-
-    func (p *MyPlugin) Name() string {
-        return "my_plugin"
-    }
-
-    func (p *MyPlugin) List(options *ListOptions) ([]terminal.Host, error) {
-        var hosts []terminal.Host
-        hosts = append(hosts, terminal.Host{
-            Type: terminal.TerminalTypeHost,
-            SSHInfo: terminal.SSHInfo{
-                Name:       "example-vm",
-                PublicIP:   "192.168.1.1",
-                LocalIP:    "10.0.0.1",
-                Port:       22,
-                User:       "root",
-                UseLocalIP: p.option.ConnectionOptions.UseLocalIP,
-            },
-        })
-        return hosts, nil
-    }
-
-    func (p *MyPlugin) Cache() bool {
-        return true
-    }
-
-    ```
-
-4. Configure Plugin
-
-    Add the custom plugin configuration in the hostnav configuration file.
-
-    ```yaml
-    plugins:
-        my_plugin:
-            endpoint: "https://api.example.com"
-            access_key: "your-access-key"
-            access_key_secret: "your-secret-key"
-            regions:
-            - "us-west-1"
-            - "us-east-1"
-            connections:
-            use_local_ip: true
-
-    ```
-
-5. Compile and Run
+### 使用tmux
+要在 tmux 中绑定按键以打开 hostnav，你可以将以下配置添加到您的 ~/.tmux.conf 文件中：
 
 ```bash
-go build -o hostnav .
-./hostnav -config ~/.hostnav.yaml
+# 绑定 Prefix-G 在新窗口中打开 hostnav
+tmux bind g split-window 'hostnav -new-window'
+
+# 绑定 Prefix-G 在当前窗口分隔出一个面板并打开 hostnav
+tmux bind g split-window 'hostnav'
 ```
 
-## Contributing
-Issues and pull requests are welcome. To start contributing, clone this repository and create a new branch for your changes.
+关于分隔窗口并以不同方式打开 hostnav 的更具体示例：
+
+```bash
+# 绑定 Prefix-G 分隔出一个垂直面板并打开 hostnav
+tmux bind g split-window -v 'hostnav'
+
+# 绑定 Prefix-G 分隔出一个水平面板并打开 hostnav
+tmux bind g split-window -h 'hostnav'
+```
+
+这些命令绑定键 G（在按下 tmux 前缀键后，通常是 Ctrl-b），以创建一个新窗口或分隔当前窗口，并在新面板或窗口中执行 hostnav​ ([Koen Woortman](https://koenwoortman.com/tmux-remap-split-window-keys/))​​ ([Stack Overflow](https://stackoverflow.com/questions/38967247/tmux-how-do-i-bind-function-keys-to-commands))​。
+
+
+
+
+
+
+
+
+## 插件开发指南
+
+### 插件的作用
+插件是 hostnav 的核心，通过插件系统，用户可以扩展 hostnav 的功能，以支持更多的云平台、容器平台和其他资源的管理。插件的主要作用包括：
+
+- 资源查询：从不同平台获取资源信息。
+- 终端连接：提供连接到资源的功能。
+- 插件化开发：用户可以开发自定义插件，扩展 hostnav 的功能。
+
+### 插件开发流程
+
+1. 创建插件目录
+在自定义插件目录中创建一个新的插件目录，例如 `my_plugin`。
+
+2. 实现插件接口
+在插件目录中创建一个新的 Go 文件，例如  `my_plugin.go`，并实现插件接口。
+
+```go
+type ListOptions struct {
+    Order   int    `json:"order" yaml:"order"`
+    OrderBy string `json:"order_by" yaml:"order_by"`
+}
+
+type Plugin interface {
+    List(option *ListOptions) ([]terminal.Host, error)
+    Name() string
+    Cache() bool
+    Init(option interface{}) error
+}
+```
+
+3. 实现插件逻辑
+```go
+package my_plugin
+
+import (
+    "github.com/raojinlin/hostnav"
+    "github.com/raojinlin/hostnav/pkg/terminal"
+)
+
+type MyPlugin struct {
+    option *hostnav.CloudProviderOption
+}
+
+func NewMyPlugin() *MyPlugin {
+    return &MyPlugin{option: &hostnav.CloudProviderOption{}}
+}
+
+func (p *MyPlugin) Init(option interface{}) error {
+    err := hostnav.MapToStruct(option, p.option)
+    if err != nil {
+        return err
+    }
+    // 初始化云平台客户端
+    return nil
+}
+
+func (p *MyPlugin) Name() string {
+    return "my_plugin"
+}
+
+func (p *MyPlugin) List(options *ListOptions) ([]terminal.Host, error) {
+    var hosts []terminal.Host
+    hosts = append(hosts, terminal.Host{
+        Type: terminal.TerminalTypeHost,
+        SSHInfo: terminal.SSHInfo{
+            Name:       "example-vm",
+            PublicIP:   "192.168.1.1",
+            LocalIP:    "10.0.0.1",
+            Port:       22,
+            User:       "root",
+            UseLocalIP: p.option.ConnectionOptions.UseLocalIP,
+        },
+    })
+    return hosts, nil
+}
+
+func (p *MyPlugin) Cache() bool {
+    return true
+}
+```
+
+4. 配置插件
+
+在 hostnav 的配置文件中添加自定义插件的配置。
+```yaml
+custom_plugins_dir: "/path/to/custom/plugins"
+
+plugins:
+  my_plugin:
+    endpoint: "https://api.example.com"
+    access_key: "your-access-key"
+    access_key_secret: "your-secret-key"
+    regions:
+      - "us-west-1"
+      - "us-east-1"
+    connections:
+      use_local_ip: true
+```
+
+5. 编译和运行
+```go
+go build -o hostnav .
+./hostnav -config ~/.hostnav.yaml
+
+```
+
+
+## 贡献
+欢迎提交问题和拉取请求。要开始贡献，请克隆此仓库并创建一个新的分支进行更改。
 
 ```bash
 git clone https://github.com/raojinlin/hostnav.git
 cd hostnav
 git checkout -b new-feature
+
 ```
