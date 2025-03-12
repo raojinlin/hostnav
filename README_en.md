@@ -150,7 +150,7 @@ plugins:
 ### BCC Baidu Cloud Server Plugin
 
 ```bash
-hostnav -plugins bcC
+hostnav -plugins bcc
 ```
 
 Configuration:
@@ -258,6 +258,49 @@ plugins:
     # Asset filter
     search: xxxx
 ```
+
+### File Plugin
+
+Command:
+```
+hostnav -plugins file
+```
+
+Configuration:
+```yaml
+plugins:
+  file:
+    - /path/to/you-file-contains-servers.yaml
+    - /path/to/you-file-contains-servers.json
+```
+
+/path/to/you-file-contains-servers.yaml：
+
+```yaml
+- name: SERVER-NAME
+  public_ip: SERVER-PUBLIC-IP
+  local_ip: SERVER-LOCAL-IP
+  use_local_ip: true|false
+  user: SSH-LOGIN-USER
+  identity_file: SSH-LOGIN-IDENTITY-FILE-PATH
+```
+
+Or you can use JSON.
+
+/path/to/you-file-contains-servers.json：
+
+```json
+{
+  "name": SERVER-NAME
+  "public_ip": SERVER-PUBLIC-IP
+  "local_ip": SERVER-LOCAL-IP
+  "use_local_ip": true|false
+  "user": SSH-LOGIN-USER
+  "identity_file": SSH-LOGIN-IDENTITY-FILE-PATH
+}
+```
+
+
 
 ## Plugin Development Guide
 ### Role of Plugins
