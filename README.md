@@ -153,15 +153,39 @@ hostnav -plugins file
 配置：
 
 ```yaml
-- type: host
-  ssh_info:
-    name: my test server
-    public_ip: 192.168.5.43
-    local_ip: 192.168.5.43
-    user: root
-    port: 22
-    user_local_ip: true
+plugins:
+  file:
+    - /path/to/you-file-contains-servers.yaml
+    - /path/to/you-file-contains-servers.json
 ```
+
+/path/to/you-file-contains-servers.yaml内容：
+
+```yaml
+- name: SERVER-NAME
+  public_ip: SERVER-PUBLIC-IP
+  local_ip: SERVER-LOCAL-IP
+  use_local_ip: true|false
+  user: SSH-LOGIN-USER
+  identity_file: SSH-LOGIN-IDENTITY-FILE-PATH
+```
+
+或者使用json格式
+
+/path/to/you-file-contains-servers.json内容：
+
+```json
+{
+  "name": SERVER-NAME
+  "public_ip": SERVER-PUBLIC-IP
+  "local_ip": SERVER-LOCAL-IP
+  "use_local_ip": true|false
+  "user": SSH-LOGIN-USER
+  "identity_file": SSH-LOGIN-IDENTITY-FILE-PATH
+}
+```
+
+
 
 ### BCC百度云服务器插件
 使用:
